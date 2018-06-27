@@ -2,13 +2,13 @@ async function postJSON(url, data) {
     return await $.ajax({
         type: "POST",
         contentType: "application/json",
-        url: url,
+        url,
         data: JSON.stringify(data)
     });
 }
 
 function sleep(timeout) {
-    return new Promise(res => setTimeout(res, timeout));
+    return new Promise((res) => setTimeout(res, timeout));
 }
 
 function _animeNotFoundMsg() {
@@ -42,24 +42,24 @@ function versionBiggerThan(a, b) {
         return null;
     }
 
-    const a_components = a.split(".");
-    const b_components = b.split(".");
-    const len = Math.min(a_components.length, b_components.length);
+    const aComponents = a.split(".");
+    const bComponents = b.split(".");
+    const len = Math.min(aComponents.length, bComponents.length);
 
     for (let i = 0; i < len; i++) {
-        if (parseInt(a_components[i]) > parseInt(b_components[i])) {
+        if (parseInt(aComponents[i]) > parseInt(bComponents[i])) {
             return true;
         }
-        if (parseInt(a_components[i]) < parseInt(b_components[i])) {
+        if (parseInt(aComponents[i]) < parseInt(bComponents[i])) {
             return false;
         }
     }
 
-    if (a_components.length > b_components.length) {
+    if (aComponents.length > bComponents.length) {
         return true;
     }
 
-    if (a_components.length < b_components.length) {
+    if (aComponents.length < bComponents.length) {
         return false;
     }
 }

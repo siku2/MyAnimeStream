@@ -114,7 +114,7 @@ class Episode(Stateful, abc.ABC):
     @property
     @abc.abstractmethod
     def streams(self) -> List[Stream]:
-        ...
+        pass
 
     @cached_property
     def stream(self) -> Optional[Stream]:

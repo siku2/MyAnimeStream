@@ -17,20 +17,6 @@ function addSettingsButton() {
 }
 
 
-async function showSettings() {
-    console.log("Building settings page");
-    document.querySelector("div#horiznav_nav a[href$=myanimestream]")
-        .classList.add("horiznav_active");
-
-    const container = document.querySelector("div#content div form")
-        .parentElement;
-
-    container.innerHTML = await $.get(grobberUrl + "/templates/mal/settings", await config.all);
-    document.querySelector("input[name=submit]")
-        .addEventListener("click", submitSettings);
-}
-
-
 function formParseValue(value) {
     switch (value) {
         case "true":
@@ -39,6 +25,7 @@ function formParseValue(value) {
             return false;
     }
 }
+
 
 async function submitSettings() {
     const dataArray = $("div#content div form")
@@ -58,4 +45,18 @@ async function submitSettings() {
         $("#update_fail_display")
             .show();
     }
+}
+
+
+async function showSettings() {
+    console.log("Building settings page");
+    document.querySelector("div#horiznav_nav a[href$=myanimestream]")
+        .classList.add("horiznav_active");
+
+    const container = document.querySelector("div#content div form")
+        .parentElement;
+
+    container.innerHTML = await $.get(grobberUrl + "/templates/mal/settings", await config.all);
+    document.querySelector("input[name=submit]")
+        .addEventListener("click", submitSettings);
 }

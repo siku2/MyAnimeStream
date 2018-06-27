@@ -21,7 +21,7 @@ class AnimeListEntry {
     }
 
     get uidValid() {
-        return (async () => await this.uid && this._latestEpisode !== undefined)();
+        return (async () => await this.uid && this._latestEpisode >= 0)();
     }
 
     get airing() {
@@ -29,11 +29,11 @@ class AnimeListEntry {
     }
 
     get latestEpisode() {
-        return this._latestEpisode
+        return this._latestEpisode;
     }
 
     set latestEpisode(value) {
-        this._latestEpisode = value
+        this._latestEpisode = value;
     }
 
     get currentEpisode() {
@@ -78,7 +78,7 @@ class AnimeListEntry {
                 text = "| " + text;
             }
             const el = $("<span></span>").text(text);
-            classList.forEach(cls => el.addClass(cls));
+            classList.forEach((cls) => el.addClass(cls));
             if (explanation) {
                 el.attr("data-balloon-pos", "up");
                 el.attr("data-balloon", explanation);
@@ -143,7 +143,7 @@ async function highlightAnimeWithUnwatchedEpisodes() {
     displayCachedAnimeList(watchingList);
 
     const uids = {};
-    for (item of watchingList) {
+    for (const item of watchingList) {
         if (await item.uid) {
             uids[await item.uid] = item;
         }
@@ -155,7 +155,7 @@ async function highlightAnimeWithUnwatchedEpisodes() {
     }
 
     Object.entries(resp.anime).forEach(([uid, epCount]) => uids[uid].latestEpisode = epCount);
-    watchingList.forEach(anime => anime.show());
+    watchingList.forEach((anime) => anime.show());
 
     cacheAnimeList(watchingList);
 }

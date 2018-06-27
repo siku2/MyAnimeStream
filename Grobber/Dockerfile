@@ -1,5 +1,7 @@
 FROM tiangolo/uwsgi-nginx-flask:python3.6
 
+LABEL maintainer="siku2@outlook.com"
+
 COPY ./requirements.txt ./
 RUN pip install -r requirements.txt
 

@@ -7,7 +7,7 @@ function addUserContext() {
         if (username) {
             console.log("Set user context for", username);
             Raven.setUserContext({
-                username: username,
+                username,
                 mobile: isMobilePage()
             });
         } else {

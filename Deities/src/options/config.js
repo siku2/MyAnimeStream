@@ -59,7 +59,7 @@ async function loadConfig() {
 
         if (resp && resp.success) {
             Object.assign(_config, resp.config);
-            console.log("loaded config")
+            console.log("loaded config");
         }
     } else {
         console.warn("Can't load config (user not logged in)");

@@ -8,9 +8,9 @@ function adRemove() {
             if (!nodeVal) {
                 return;
             }
-            return Boolean(adSearch.find(target => nodeVal.includes(target)));
+            return Boolean(adSearch.find((target) => nodeVal.includes(target)));
         })
-        .forEach(el => {
+        .forEach((el) => {
             for (let i = 0; i < 5; i++) {
                 el = el.parentElement;
             }
