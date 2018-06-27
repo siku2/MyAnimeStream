@@ -6,6 +6,7 @@ python:
 install:
   - pip install -r Deities/tools/requirements.txt
   - pip install -r Grobber/requirements.txt
+  - pip install codecov
   - pip install pytest pytest-cov
 
 script:
