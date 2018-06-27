@@ -1,12 +1,12 @@
 from flask import Response
 
-from .. import utils
+from ..grobber import utils
+from ..grobber import app
 
 SHOULD_FAIL = object()
 
 
 def test_create_response():
-    from .. import app
     with app.test_request_context():
         resp = utils.create_response()
     assert isinstance(resp, Response)
