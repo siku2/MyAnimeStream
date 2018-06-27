@@ -9,8 +9,8 @@
 // @include /^http(?:s)?\:\/\/myanimelist\.net.*$/
 // @noframes True
 // @run-at document-start
-// @require https://code.jquery.com/jquery-3.2.1.min.js
-// @require https://cdn.ravenjs.com/3.25.1/raven.min.js
+// @require https://code.jquery.com/jquery-3.3.1.min.js
+// @require https://cdn.ravenjs.com/3.26.2/raven.min.js
 // @require https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js
 // @require https://cdn.plyr.io/3.3.10/plyr.js
 // ==/UserScript==

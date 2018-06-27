@@ -10,8 +10,8 @@ userscript:
   noframes:     true
   run-at:       document-start
   require:
-    - https://code.jquery.com/jquery-3.2.1.min.js
-    - https://cdn.ravenjs.com/3.25.1/raven.min.js
+    - https://code.jquery.com/jquery-3.3.1.min.js
+    - https://cdn.ravenjs.com/3.26.2/raven.min.js
     - https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js
     - https://cdn.plyr.io/3.3.10/plyr.js
 
