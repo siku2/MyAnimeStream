@@ -1,6 +1,8 @@
+.pytest_cache/
 .idea/
 node_modules/
 venv/
 
 *.pyc
+.coverage
 package-lock.json
