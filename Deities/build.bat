@@ -1,3 +1,3 @@
 call ..\venv\scripts\activate
-call parser\grease.py src dist
+call parser\greaser src dist
 pause

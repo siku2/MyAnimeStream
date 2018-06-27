@@ -6,7 +6,7 @@ from .merger import combine, merge
 from .processor import process
 from .scraper import scrape
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 
 class Indenter:
