@@ -1,0 +1,10 @@
+version: 1.2.1;
+release: 2018-06-26 20:32:20;
+---
+added: Stream links expire after a certain time thus broken streams should fix themselves after a while;
+added: AnimeList details are now cached so they load quicker;
+added: Pagination for episode lists;
+fixed: Improved UID caching;
+fixed: Mp4Upload no longer broken;
+fixed[2]: 9Anime anime work again;
+fixed: Detecting Unicode BOM;

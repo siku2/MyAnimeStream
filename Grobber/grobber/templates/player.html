@@ -1,0 +1,8 @@
+<meta name="referrer" content="no-referrer"/>
+<link rel="stylesheet" href="https://cdn.plyr.io/3.3.10/plyr.css">
+
+<video id="player" poster="{{ episode.poster }}" playsinline controls data-plyr-config=''>
+    {% for link in episode.stream %}
+        <source src="{{ link }}">
+    {% endfor %}
+</video>

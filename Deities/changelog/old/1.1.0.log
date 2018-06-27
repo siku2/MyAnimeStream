@@ -1,0 +1,8 @@
+version: 1.1.0;
+release: 2018-06-14 16:15:45.066;
+---
+added: When switching to the next episode the player automatically starts playing;
+added: [Mp4Upload](https://www.mp4upload.com) stream extractor;
+
+changed: Temporarily disabled Streamango and Estream sources as they're ip locked;
+fixed[1]: Cached Streamango streams no longer crash Grobber;

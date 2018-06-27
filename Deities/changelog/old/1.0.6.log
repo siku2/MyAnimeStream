@@ -1,0 +1,11 @@
+version: 1.0.6;
+release: 2018-06-10 19:24:00.000;
+---
+
+added[2]: Can now extract streams from [Streamango](https://streamango.com/);
+added[1]: This very changelog;
+
+fixed[1]: User settings are now stored properly on the server *(now if only the corresponding MAL page were accessible)*;
+fixed: Anime with no episodes no longer cause `uid invalid` errors;
+
+changed[1]: Changed the caching of anime uids. You can expect a lot of "unknown uid" messages on your anime list because of this. **Sorry!**;
