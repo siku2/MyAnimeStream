@@ -1,3 +1,5 @@
 version: 1.2.3;
 ---
 CHANGED: Adjusted some bits of code for Codacy
+FIXED: 9anime works again (just a question of how long)
+FIXED: Handling special Unicode BOM character

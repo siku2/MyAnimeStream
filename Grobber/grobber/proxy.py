@@ -9,7 +9,7 @@ from pymongo.database import Database
 from werkzeug.local import LocalProxy
 
 _MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-_MONGO_DB_NAME = os.getenv("MONGO_DB", "myanimestream")
+_MONGO_DB_NAME = os.getenv("MONGO_DB", "MyAnimeStream")
 
 
 def teardown():
@@ -34,6 +34,6 @@ requests_dub: bool = LocalProxy(_requests_dub)
 
 mongo_client: MongoClient = LocalProxy(_mongo_client)
 db: Database = LocalProxy(partial(itemgetter(_MONGO_DB_NAME), mongo_client))
-anime_collection: Collection = LocalProxy(partial(itemgetter("animes"), db))
+anime_collection: Collection = LocalProxy(partial(itemgetter("anime"), db))
 user_collection: Collection = LocalProxy(partial(itemgetter("users"), db))
 changelog_collection: Collection = LocalProxy(partial(itemgetter("changelog"), db))

@@ -47,7 +47,7 @@ def generate_underscore_param(id: str, ts: str, server: str) -> int:
             n *= ord(t[i]) if i < len(t) else 8
         return format(n, "x")  # convert n to hex string
 
-    starting_value = "bfcad671"
+    starting_value = "95ec8bcc"
     params = [("id", id), ("ts", ts), ("server", server)]
     o = __s(starting_value)
 

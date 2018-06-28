@@ -110,7 +110,8 @@ class Request:
     @cached_property
     def text(self) -> str:
         self.response.encoding = "utf-8-sig"
-        return self.response.text
+        text = self.response.text.replace("\ufeff", "")
+        return text
 
     @text.setter
     def text(self, value: str):
