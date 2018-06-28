@@ -41,9 +41,12 @@ async function finishedEpisode() {
 
 async function onVideoEnd() {
     await finishedEpisode();
-    if (currentEpisodeIndex + 1 < animeEpisodes) {
+    if (currentEpisodeIndex + 1 <= animeEpisodes) {
         const url = new URL((currentEpisodeIndex + 1).toString(), window.location.href);
         url.searchParams.set("autoplay", "true");
+        if (currentPlayer.fullscreen.active) {
+            url.searchParams.set("fullscreen", "true");
+        }
         window.location.href = url.toString();
     } else {
         console.log("reached the last episode");
@@ -61,6 +64,7 @@ async function onPageLeave() {
 
         const url = new URL(window.location.href);
         url.delete("autoplay");
+        url.delete("fullscreen");
         history.pushState(null, null, url.toString());
     }
 }
@@ -72,6 +76,9 @@ function setupPlyr() {
         const url = new URL(window.location.href);
         if (url.searchParams.get("autoplay") === "true") {
             currentPlayer.play();
+        }
+        if (url.searchParams.get("fullscreen") === "true") {
+            currentPlayer.fullscreen.enter();
         }
 
         currentPlayer.on("ended", onVideoEnd);

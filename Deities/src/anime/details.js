@@ -23,7 +23,7 @@ function showAnimeDetails() {
             .addClass("inputButton btn-middle")
             .css("padding", "4px 12px")
             .css("margin-left", "8px")
-            .click(() => window.location.pathname += "/episode/" + nextEpisode.toString())
+            .click(() => window.location.pathname += "/episode/" + nextEpisode.toString() + "?autoplay=true")
             .appendTo($("div.user-status-block.js-user-status-block"));
     }
 }

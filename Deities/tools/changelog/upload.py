@@ -51,7 +51,7 @@ def parse_header(text: str) -> ChangelogHeader:
             elif text_style == ">":
                 value = RE_NEWLINE_STRIPPER.sub(" ", value)
             else:
-                raise SyntaxError(f"Unknown text style (text_style)") from None
+                raise SyntaxError(f"Unknown text style ({text_style})") from None
         headers[key] = value
 
     version = headers["version"]
@@ -108,6 +108,6 @@ if __name__ == "__main__":
         from pymongo import MongoClient
 
         client = MongoClient(args.output)
-        database = client.myanimestream
+        database = client.MyAnimeStream
         database.changelog.update_one({"version_num": changelog["version_num"]}, {"$set": changelog}, upsert=True)
         print("Uploaded changelog to MongoDb")

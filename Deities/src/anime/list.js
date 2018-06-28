@@ -28,6 +28,14 @@ class AnimeListEntry {
         return this.el.find("span.content-status").text().trim() === "Airing";
     }
 
+    get previousLatestEpisode() {
+        return isNaN(this._previousLatestEpisode) ? this.latestEpisode : this._previousLatestEpisode;
+    }
+
+    set previousLatestEpisode(value) {
+        this._previousLatestEpisode = value;
+    }
+
     get latestEpisode() {
         return this._latestEpisode;
     }
@@ -40,11 +48,12 @@ class AnimeListEntry {
         return parseInt(this.el.find("td.progress span a").text());
     }
 
+    get nUnseenEpisodes() {
+        return (this.latestEpisode - this.currentEpisode) || 0;
+    }
+
     get nNewEpisodes() {
-        if (!this.latestEpisode) {
-            return 0;
-        }
-        return this.latestEpisode - this.currentEpisode;
+        return (this.latestEpisode - this.previousLatestEpisode) || 0;
     }
 
     async show() {
@@ -55,14 +64,19 @@ class AnimeListEntry {
 
         if (await this.uidValid) {
             if (this.nNewEpisodes > 0) {
-                if (this.airing) {
-                    text = (this.nNewEpisodes === 1) ? "new episode!" : "new episodes!";
-                    classList.push("new-episode");
-                    explanation = "There " +
-                        ((this.nNewEpisodes === 1) ? "is an episode" : ("are " + this.nNewEpisodes.toString() + " episodes")) +
-                        " you haven't watched yet!";
-                    onClick = () => window.location.pathname = this.link + "/episode/" + (this.currentEpisode + 1).toString();
-                }
+                text = (this.nNewEpisodes === 1) ? "new episode!" : "new episodes!";
+                classList.push("new-episode");
+                explanation = "There " +
+                    ((this.nNewEpisodes === 1) ? "is an episode" : ("are " + this.nNewEpisodes.toString() + " episodes")) +
+                    " you haven't watched yet!";
+                onClick = () => window.location.pathname = this.link + "/episode/" + (this.currentEpisode + 1).toString();
+            } else if (this.nUnseenEpisodes > 0) {
+                text = (this.nUnseenEpisodes === 1) ? "unseen episode!" : "unseen episodes!";
+                classList.push("unseen-episode");
+                explanation = "There " +
+                    ((this.nUnseenEpisodes === 1) ? "is an episode" : ("are " + this.nUnseenEpisodes.toString() + " episodes")) +
+                    " you haven't watched yet!";
+                onClick = () => window.location.pathname = this.link + "/episode/" + (this.currentEpisode + 1).toString();
             }
         }
         else if (await this.uid) {
@@ -115,7 +129,8 @@ function displayCachedAnimeList(list) {
         const cachedAnime = cachedList[anime.name];
         if (cachedAnime) {
             anime._uid = cachedAnime.uid;
-            anime._latestEpisode = cachedAnime.latestEpisode;
+            anime.latestEpisode = cachedAnime.latestEpisode;
+            anime.previousLatestEpisode = cachedAnime.previousLatestEpisode;
             anime.show();
         }
     }
@@ -124,7 +139,11 @@ function displayCachedAnimeList(list) {
 function cacheAnimeList(list) {
     const cachedList = {};
     for (const anime of list) {
-        cachedList[anime.name] = {uid: anime._uid, latestEpisode: anime._latestEpisode};
+        cachedList[anime.name] = {
+            uid: anime._uid,
+            latestEpisode: anime.latestEpisode,
+            previousLatestEpisode: anime.previousLatestEpisode
+        };
     }
     localStorage.setItem("cachedAnimeList", JSON.stringify(cachedList));
 }
@@ -137,7 +156,7 @@ async function highlightAnimeWithUnwatchedEpisodes() {
             color: "#787878" + " !important"
         }
     });
-    
+
     const watchingList = await getCurrentlyWatchingAnimeList();
 
     displayCachedAnimeList(watchingList);

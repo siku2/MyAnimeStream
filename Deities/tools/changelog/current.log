@@ -1,5 +1,13 @@
-version: 1.2.3;
+version: 1.4.0;
+release: 2018-06-28 15:58;
 ---
-CHANGED: Adjusted some bits of code for Codacy
-FIXED: 9anime works again (just a question of how long)
-FIXED: Handling special Unicode BOM character
+ADDED[1]: Keeping fullscreen when automatically switching to next episode;
+ADDED: "Continue Watching" / "Start Watching" button autoplays;
+CHANGED: >
+Showing "new episode" when there's actually a new episode compared to
+last time and showing "unseen episode" when there are unseen episodes;
+
+CHANGED: Adjusted some bits of code for Codacy;
+FIXED: 9anime works again (just a question of how long);
+FIXED: Handling special Unicode BOM character;
+FIXED: Autoplay from the second last to the last episode works now;
