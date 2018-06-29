@@ -32,8 +32,11 @@ async function setAnimeUID(name, uid) {
 function updatePreviousLastEpisode() {
     const cachedList = JSON.parse(localStorage.getItem("cachedAnimeList"));
     if (cachedList) {
-        // TODO: manipulate
-        cachedList[animeName]
+        const cachedAnime = cachedList[animeName];
+        if (cachedAnime) {
+            console.debug("set prevLatestEpisode to", animeEpisodes);
+            cachedAnime.previousLatestEpisode = animeEpisodes;
+        }
     }
     localStorage.setItem("cachedAnimeList", JSON.stringify(cachedList));
 }

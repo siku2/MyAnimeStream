@@ -1,4 +1,5 @@
-version: 1.4.2;
+version: 1.4.3;
 ---
 CHANGED: Using `a` element links instead of onclick events;
 FIXED: Autoplaying from "Continue Watching" button works now;
+FIXED: Storing previous latest episode for displaying "new episode" fixed.
