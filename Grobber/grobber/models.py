@@ -39,7 +39,7 @@ class Stream(Expiring, abc.ABC):
     INCLUDE_CLS = True
     ATTRS = ("links", "poster")
     CHANGING_ATTRS = ("links",)
-    EXPIRE_TIME = Expiring.DAY
+    EXPIRE_TIME = 6 * Expiring.HOUR
 
     HOST = None
     PRIORITY = 1
