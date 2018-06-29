@@ -56,10 +56,15 @@ class AnimeListEntry {
         return (this.latestEpisode - this.previousLatestEpisode) || 0;
     }
 
+    removePrevious() {
+        this.el.find(".episode-status").remove();
+    }
+
     async show() {
         let text;
         let explanation;
         let onClick;
+        let href;
         const classList = ["content-status", "episode-status"];
 
         if (await this.uidValid) {
@@ -69,14 +74,14 @@ class AnimeListEntry {
                 explanation = "There " +
                     ((this.nNewEpisodes === 1) ? "is an episode" : ("are " + this.nNewEpisodes.toString() + " episodes")) +
                     " you haven't watched yet!";
-                onClick = () => window.location.pathname = this.link + "/episode/" + (this.currentEpisode + 1).toString();
+                href = this.link + "/episode/" + (this.currentEpisode + 1).toString();
             } else if (this.nUnseenEpisodes > 0) {
                 text = (this.nUnseenEpisodes === 1) ? "unseen episode!" : "unseen episodes!";
                 classList.push("unseen-episode");
                 explanation = "There " +
                     ((this.nUnseenEpisodes === 1) ? "is an episode" : ("are " + this.nUnseenEpisodes.toString() + " episodes")) +
                     " you haven't watched yet!";
-                onClick = () => window.location.pathname = this.link + "/episode/" + (this.currentEpisode + 1).toString();
+                href = this.link + "/episode/" + (this.currentEpisode + 1).toString();
             }
         }
         else if (await this.uid) {
@@ -88,10 +93,17 @@ class AnimeListEntry {
         }
         if (text) {
             const beforeElement = this.el.find("td.title span.content-status");
+            this.removePrevious();
             if (beforeElement.is(":visible")) {
                 text = "| " + text;
             }
-            const el = $("<span></span>").text(text);
+            let el;
+            if (href) {
+                el = $("<a></a>").attr("href", href);
+            } else {
+                el = $("<span></span>");
+            }
+            el.text(text);
             classList.forEach((cls) => el.addClass(cls));
             if (explanation) {
                 el.attr("data-balloon-pos", "up");
@@ -149,9 +161,10 @@ function cacheAnimeList(list) {
 }
 
 async function highlightAnimeWithUnwatchedEpisodes() {
+    console.warn("running");
     injectBalloonCSS();
     $.injectCSS({
-        "span.episode-status.new-episode": {
+        ".episode-status.new-episode": {
             "font-weight": "bolder",
             color: "#787878" + " !important"
         }

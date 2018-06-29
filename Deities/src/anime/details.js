@@ -18,12 +18,17 @@ function showAnimeDetails() {
     const nextEpisode = (parseInt(atEpisodeContainer.getAttribute("value")) + 1) || 1;
 
     if (nextEpisode <= animeEpisodes) {
+        const epUrl = new URL(location.href);
+        epUrl.pathname += "/episode/" + nextEpisode.toString();
+        epUrl.searchParams.set("autoplay", "true");
+
         $("<a></a>")
             .text(((nextEpisode === 1) ? "Start" : "Continue") + " Watching")
             .addClass("inputButton btn-middle")
             .css("padding", "4px 12px")
             .css("margin-left", "8px")
-            .click(() => window.location.pathname += "/episode/" + nextEpisode.toString() + "?autoplay=true")
+            .css("color", "white")
+            .attr("href", epUrl.toString())
             .appendTo($("div.user-status-block.js-user-status-block"));
     }
 }
