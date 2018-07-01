@@ -1,0 +1,12 @@
+version: 1.0.0;
+release: 2018-06-28;
+---
+ADDED[10]: Keeping fullscreen when automatically switching to next episode;
+changed: >
+Showing "new episode" when there's actually a new episode compared to
+last time and showing "unseen episode" when there are unseen episodes;
+
+
+
+
+                   FIXED:             Autoplay from the second last to the last episode works now;

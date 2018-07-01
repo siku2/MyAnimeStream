@@ -13,22 +13,14 @@ const PageEnum = Object.freeze({
 
 let currentPage;
 
-async function route() {
-    const path = window.location.pathname;
-    const params = window.location.search;
-
-    if (settingPaths.indexOf(path) > -1) {
-        addSettingsButton();
+async function routeAnimePage(path) {
+    const foundAnimeInfo = await getAnimeInfo();
+    if (!foundAnimeInfo) {
+        _animeNotFoundMsg();
+        return;
     }
 
-    if (path.match(/^\/anime\/\d+\/[\w-]+\/?/)) {
-        patchNoEpisodeTab();
-        const foundAnimeInfo = await getAnimeInfo();
-        if (!foundAnimeInfo) {
-            _animeNotFoundMsg();
-            return;
-        }
-    }
+    patchNoEpisodeTab();
 
     if (path.match(/^\/anime\/\d+\/[\w-]+\/?$/)) {
         currentPage = PageEnum.ANIMEDETAILS;
@@ -39,6 +31,22 @@ async function route() {
     } else if (path.match(/^\/anime\/\d+\/[\w-]+\/episode\/\d+\/?$/)) {
         currentPage = PageEnum.EPISODE;
         showAnimeEpisode();
+    } else {
+        console.warn("Unknown anime page");
+    }
+}
+
+
+async function route() {
+    const path = window.location.pathname;
+    const params = window.location.search;
+
+    if (settingPaths.indexOf(path) > -1) {
+        addSettingsButton();
+    }
+
+    if (path.match(/^\/anime\/\d+\/[\w-]+\/?/)) {
+        routeAnimePage(path, params);
     } else if (path.match(/^\/animelist\/\w+$/)) {
         currentPage = PageEnum.ANIMELIST;
         highlightAnimeWithUnwatchedEpisodes();
@@ -48,6 +56,6 @@ async function route() {
     } else {
         currentPage = PageEnum.UNKNOWN;
     }
-    
+
     changelogCheckVersion();
 }

@@ -29,6 +29,18 @@ async function setAnimeUID(name, uid) {
     localStorage.setItem("AnimeUIDs", JSON.stringify(_animeUidCache));
 }
 
+function updatePreviousLastEpisode() {
+    const cachedList = JSON.parse(localStorage.getItem("cachedAnimeList"));
+    if (cachedList) {
+        const cachedAnime = cachedList[animeName];
+        if (cachedAnime) {
+            console.debug("set prevLatestEpisode to", animeEpisodes);
+            cachedAnime.previousLatestEpisode = animeEpisodes;
+        }
+    }
+    localStorage.setItem("cachedAnimeList", JSON.stringify(cachedList));
+}
+
 
 async function getAnimeInfo() {
     animeName = document.querySelector("h1>span[itemprop=name]").innerText;
@@ -38,6 +50,7 @@ async function getAnimeInfo() {
         const data = await $.getJSON(grobberUrl + "/anime/" + animeUID);
         if (data.success) {
             animeEpisodes = data.episodes;
+            updatePreviousLastEpisode();
             return true;
         } else {
             console.warn("Unsuccessful request for uid \"" + animeUID + "\":", data);
@@ -56,6 +69,7 @@ async function getAnimeInfo() {
     const data = result.anime[0].anime;
     animeUID = data.uid;
     animeEpisodes = data.episodes;
+    updatePreviousLastEpisode();
     await setAnimeUID(animeName, animeUID);
     return true;
 }

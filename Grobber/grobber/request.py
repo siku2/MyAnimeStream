@@ -28,6 +28,7 @@ class Request:
         self._raw_url = url
         self._params = params
         self._headers = headers
+        self.request_kwargs = {}
 
     def __hash__(self) -> int:
         return hash(self.url)
@@ -80,7 +81,7 @@ class Request:
 
     @cached_property
     def response(self) -> requests.Response:
-        return requests.get(self.url, headers=self.headers, verify=False)
+        return requests.get(self.url, headers=self.headers, verify=False, **self.request_kwargs)
 
     @response.setter
     def response(self, value: requests.Response):
@@ -98,7 +99,7 @@ class Request:
     def head_response(self) -> requests.Response:
         if hasattr(self, "_response"):
             return self.response
-        return requests.head(self.url, headers=self.headers, verify=False)
+        return requests.head(self.url, headers=self.headers, verify=False, **self.request_kwargs)
 
     @cached_property
     def head_success(self) -> bool:

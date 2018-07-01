@@ -10,6 +10,7 @@ from werkzeug.routing import BaseConverter
 
 from . import __info__, proxy, sources
 from .exceptions import GrobberException, InvalidRequest, UIDUnknown
+from .forward import forward
 from .models import UID
 from .templates import templates
 from .users import users
@@ -37,6 +38,7 @@ app.url_map.converters["UID"] = UIDConverter
 
 app.register_blueprint(templates)
 app.register_blueprint(users)
+app.register_blueprint(forward)
 
 log.info(f"Grobber version {__info__.__version__} running!")
 

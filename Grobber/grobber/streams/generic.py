@@ -44,15 +44,11 @@ class Generic(Stream):
         poster = next((poster.url for poster in potential_links if poster.head_success), None)
         if poster:
             log.debug(f"Found poster for {self}: {poster}")
-        else:
-            log.debug(f"Couldn't find a poster for {self}")
         return poster
 
     @cached_property
     def links(self) -> List[str]:
         potential_links = self.get_links(RE_VIDEO_LINK_MATCHER)
-        if len(potential_links) > 0:
-            log.debug(f"{self} Got link(s): {potential_links}")
         return Stream.get_successful_links(potential_links)
 
 

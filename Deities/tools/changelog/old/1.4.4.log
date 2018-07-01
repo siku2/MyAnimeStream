@@ -1,0 +1,7 @@
+version: 1.4.4;
+release: 2018-07-01;
+---
+CHANGED: Using `a` element links instead of onclick events;
+FIXED: Autoplaying from "Continue Watching" button works now;
+FIXED: Storing previous latest episode for displaying "new episode" fixed.;
+FIXED[1]: Gogoanime now runs through a "proxy" to make sure it doesn't break *that* easily again;

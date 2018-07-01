@@ -33,7 +33,7 @@ function _animeNotFoundMsg() {
 }
 
 function injectBalloonCSS() {
-    const link = "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css\">";
+    const link = "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css'>";
     $(link).appendTo("head");
 }
 

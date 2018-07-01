@@ -1,6 +1,7 @@
 __all__ = ["create_response", "error_response", "cast_argument", "add_http_scheme", "parse_js_json", "thread_pool"]
 
 import json
+import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, TypeVar
@@ -8,6 +9,8 @@ from typing import Any, Callable, TypeVar
 from flask import Response, jsonify
 
 from .exceptions import GrobberException
+
+log = logging.getLogger(__name__)
 
 T = TypeVar("T")
 T2 = TypeVar("T2")
