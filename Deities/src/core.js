@@ -39,7 +39,7 @@ if (ravenDSN) {
             manager_version: GM_info.version
         },
         ignoreErrors: [
-            /{"isTrusted":(true|false)}/g,
+            "\"isTrusted\":",
             "rubiconClickTracking is not defined"
         ]
     }).install();

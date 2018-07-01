@@ -4,7 +4,7 @@ from typing import Callable
 _DEFAULT = object()
 
 
-def cached_property(func: Callable):
+def cached_property(func: Callable) -> property:
     cache_name = "_" + func.__name__
 
     @wraps(func)
@@ -18,3 +18,11 @@ def cached_property(func: Callable):
         return val
 
     return property(wrapper)
+
+
+def closure(func: Callable) -> Callable:
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(func, *args, **kwargs)
+
+    return wrapper
