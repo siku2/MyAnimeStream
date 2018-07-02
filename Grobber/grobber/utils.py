@@ -1,10 +1,11 @@
-__all__ = ["create_response", "error_response", "cast_argument", "add_http_scheme", "parse_js_json", "thread_pool"]
+__all__ = ["create_response", "error_response", "cast_argument", "add_http_scheme", "parse_js_json", "thread_pool", "wait_for_first"]
 
+import concurrent.futures
 import json
 import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, List, Optional, TypeVar
 
 from flask import Response, jsonify
 
@@ -67,3 +68,15 @@ def parse_js_json(text: str):
 
 THREAD_WORKERS = 10
 thread_pool = ThreadPoolExecutor(max_workers=THREAD_WORKERS)
+
+
+def wait_for_first(items: List[Callable[..., T]], cond: Callable[[T], bool] = bool) -> Optional[T]:
+    fs = [thread_pool.submit(item) for item in items]
+    fut_iter = concurrent.futures.as_completed(fs)
+    for fut in fut_iter:
+        res = fut.result()
+        if cond(res):
+            for future in fs:
+                future.cancel()
+            print(fs)
+            return res

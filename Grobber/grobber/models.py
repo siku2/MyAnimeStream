@@ -5,6 +5,7 @@ import sys
 from collections import namedtuple
 from datetime import datetime
 from difflib import SequenceMatcher
+from functools import partial
 from itertools import groupby
 from operator import attrgetter
 from typing import Any, Dict, Iterator, List, MutableSequence, NewType, Optional, Union
@@ -13,7 +14,7 @@ from .decorators import cached_property
 from .exceptions import EpisodeNotFound
 from .request import Request
 from .stateful import BsonType, Expiring, Stateful
-from .utils import thread_pool
+from .utils import thread_pool, wait_for_first
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +68,11 @@ class Stream(Expiring, abc.ABC):
     def working(self) -> bool:
         return len(self.links) > 0
 
+    @property
+    def working_self(self) -> Optional["Stream"]:
+        if self.working:
+            return self
+
     @staticmethod
     def get_successful_links(sources: Union[Request, MutableSequence[Request]]) -> List[str]:
         if isinstance(sources, Request):
@@ -114,7 +120,7 @@ class Episode(Stateful, abc.ABC):
     @property
     @abc.abstractmethod
     def streams(self) -> List[Stream]:
-        pass
+        ...
 
     @cached_property
     def stream(self) -> Optional[Stream]:
@@ -122,8 +128,8 @@ class Episode(Stateful, abc.ABC):
         for priority, streams in groupby(self.streams, attrgetter("PRIORITY")):
             streams = list(streams)
             log.debug(f"Looking at {len(streams)} stream(s) with priority {priority}")
-            all(thread_pool.map(attrgetter("working"), streams))
-            working_stream = next((stream for stream in streams if stream.working), None)
+            items = [partial(attrgetter("working_self"), stream) for stream in self.streams]
+            working_stream = wait_for_first(items)
             if working_stream:
                 log.debug(f"Found working stream: {working_stream}")
                 return working_stream
@@ -131,7 +137,9 @@ class Episode(Stateful, abc.ABC):
 
     @cached_property
     def poster(self) -> Optional[str]:
-        return next((stream.poster for stream in self.streams if stream.poster), None)
+        log.debug("searching for poster")
+        items = [partial(attrgetter("poster"), stream) for stream in self.streams]
+        return wait_for_first(items)
 
     @property
     @abc.abstractmethod
@@ -140,7 +148,7 @@ class Episode(Stateful, abc.ABC):
 
     def serialise_special(self, key: str, value: Any) -> BsonType:
         if key == "streams":
-            return [stream.state for stream in value if getattr(stream, "_links", False)]
+            return [stream.state for stream in value if getattr(stream, "_links", False) or getattr(stream, "_poster", False)]
 
     @classmethod
     def deserialise_special(cls, key: str, value: BsonType) -> Any:

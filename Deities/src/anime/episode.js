@@ -95,6 +95,12 @@ async function createPlayer(container) {
 }
 
 
+function prefetchNextEpisode() {
+    console.log("prefetching next episode");
+    $.get(grobberUrl + "/stream/" + animeUID + "/" + currentEpisodeIndex.toString());
+}
+
+
 async function showAnimeEpisode() {
     currentEpisodeIndex = parseInt(window.location.pathname.match(/^\/anime\/\d+\/[\w-]+\/episode\/(\d+)\/?$/)[1]);
     const embedContainer = $("div.video-embed.clearfix");
@@ -146,4 +152,6 @@ async function showAnimeEpisode() {
     document.querySelector("#vue-video-slide")
         .style.left = (-document.querySelector("li.btn-anime.play").offsetLeft)
         .toString() + "px";
+
+    prefetchNextEpisode();
 }

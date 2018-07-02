@@ -4,7 +4,7 @@ import requests
 import urllib3
 import yarl
 from bs4 import BeautifulSoup
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, ReadTimeout
 
 from .decorators import cached_property
 
@@ -24,11 +24,12 @@ class Request:
     _text: str
     _bs: BeautifulSoup
 
-    def __init__(self, url: str, params: Any = None, headers: Any = None):
+    def __init__(self, url: str, params: Any = None, headers: Any = None, timeout: int = None, **request_kwargs):
         self._raw_url = url
         self._params = params
         self._headers = headers
-        self.request_kwargs = {}
+        self._timeout = timeout
+        self.request_kwargs = request_kwargs
 
     def __hash__(self) -> int:
         return hash(self.url)
@@ -81,7 +82,7 @@ class Request:
 
     @cached_property
     def response(self) -> requests.Response:
-        return requests.get(self.url, headers=self.headers, verify=False, **self.request_kwargs)
+        return requests.get(self.url, headers=self.headers, verify=False, timeout=self._timeout, **self.request_kwargs)
 
     @response.setter
     def response(self, value: requests.Response):
@@ -92,20 +93,21 @@ class Request:
     def success(self) -> bool:
         try:
             return self.response.ok
-        except ConnectionError:
+        except (ConnectionError, ReadTimeout):
             return False
 
     @cached_property
     def head_response(self) -> requests.Response:
         if hasattr(self, "_response"):
             return self.response
-        return requests.head(self.url, headers=self.headers, verify=False, **self.request_kwargs)
+        timeout = self._timeout or 5
+        return requests.head(self.url, headers=self.headers, verify=False, timeout=timeout, **self.request_kwargs)
 
     @cached_property
     def head_success(self) -> bool:
         try:
             return self.head_response.ok
-        except ConnectionError:
+        except (ConnectionError, ReadTimeout):
             return False
 
     @cached_property
