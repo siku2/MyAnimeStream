@@ -52,8 +52,7 @@ class UrlPool:
 
     def update_url(self):
         for i, url in enumerate(self.urls):
-            req = Request(url)
-            req.request_kwargs["timeout"] = 3
+            req = Request(url, timeout=3)
             req.request_kwargs["allow_redirects"] = True
             log.debug(f"trying {req}")
             if req.head_success:
