@@ -1,8 +1,8 @@
-<link href="https://mas.dokkeral.com/static/css/changelog.css" rel="stylesheet">
+<link href="{{ url_for("static", filename="css/changelog.css", _external=True) }}" rel="stylesheet">
 
 <div class="changelog-container">
     <div class="changelog-header">
-        MyAnimeStream v.<span class="version">{{ to_version }}</span>
+        MyAnimeStream v<span class="version">{{ to_version }}</span>
     </div>
     <div class="changelog-content">
         {% for category, changes in categories.items() %}

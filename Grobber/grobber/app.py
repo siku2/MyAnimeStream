@@ -1,8 +1,9 @@
 import logging
+import os
 from operator import attrgetter, methodcaller
 
 import raven
-from flask import Flask, Response, redirect, render_template, request
+from flask import Flask, Response, redirect, request, url_for
 from raven.conf import setup_logging
 from raven.contrib.flask import Sentry
 from raven.handlers.logging import SentryHandler
@@ -39,6 +40,8 @@ app.url_map.converters["UID"] = UIDConverter
 app.register_blueprint(templates)
 app.register_blueprint(users)
 app.register_blueprint(forward)
+
+app.config["SERVER_NAME"] = os.getenv("SERVER_NAME")
 
 log.info(f"Grobber version {__info__.__version__} running!")
 
@@ -77,14 +80,6 @@ def search(query: str) -> Response:
     return create_response(anime=ser_results)
 
 
-@app.route("/anime/<UID:uid>")
-def get_anime(uid: UID) -> Response:
-    anime = sources.get_anime(uid)
-    if not anime:
-        raise UIDUnknown(uid)
-    return create_response(anime.to_dict())
-
-
 @app.route("/anime/episode-count", methods=("POST",))
 def get_anime_episode_count() -> Response:
     anime_uids = request.json
@@ -97,22 +92,36 @@ def get_anime_episode_count() -> Response:
     return create_response(anime=dict(anime_counts))
 
 
-@app.route("/stream/<UID:uid>/<int:index>")
-def get_stream_for_episode(uid: UID, index: int) -> Response:
+@app.route("/anime/<UID:uid>")
+def get_anime(uid: UID) -> Response:
+    anime = sources.get_anime(uid)
+    if not anime:
+        raise UIDUnknown(uid)
+    return create_response(anime.to_dict())
+
+
+@app.route("/anime/<UID:uid>/state")
+def get_anime_state(uid: UID) -> Response:
+    anime = sources.get_anime(uid)
+    if not anime:
+        raise UIDUnknown(uid)
+    return create_response(data=anime.state)
+
+
+@app.route("/anime/<UID:uid>/<int:index>/state")
+def get_episode_state(uid: UID, index: int) -> Response:
     anime = sources.get_anime(uid)
     if not anime:
         raise UIDUnknown(uid)
     episode = anime[index]
-    if episode.stream:
-        return render_template("player.html", episode=episode)
-    else:
-        return redirect(episode.host_url)
+    return create_response(data=episode.state)
 
 
-@app.route("/stream/<UID:uid>/<int:index>/poster")
+@app.route("/anime/<UID:uid>/<int:index>/poster")
 def get_episode_poster(uid: UID, index: int) -> Response:
     anime = sources.get_anime(uid)
     if not anime:
         raise UIDUnknown(uid)
     episode = anime[index]
-    return redirect(episode.poster)
+    poster = episode.poster or url_for("static", filename="images/default_poster.png", _external=True)
+    return redirect(poster)

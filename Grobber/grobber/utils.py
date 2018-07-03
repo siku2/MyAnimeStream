@@ -1,11 +1,13 @@
-__all__ = ["create_response", "error_response", "cast_argument", "add_http_scheme", "parse_js_json", "thread_pool", "wait_for_first"]
+__all__ = ["create_response", "error_response", "cast_argument", "add_http_scheme", "parse_js_json", "thread_pool", "wait_for_first",
+           "ChangelogEntry", "Version"]
 
 import concurrent.futures
 import json
 import logging
 import re
+from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Callable, List, Optional, TypeVar
+from typing import Any, Callable, Iterator, List, Optional, TypeVar
 
 from flask import Response, jsonify
 
@@ -78,5 +80,32 @@ def wait_for_first(items: List[Callable[..., T]], cond: Callable[[T], bool] = bo
         if cond(res):
             for future in fs:
                 future.cancel()
-            print(fs)
             return res
+
+
+ChangelogEntry = namedtuple("ChangelogEntry", ("text", "priority", "version", "date"))
+
+
+class Version:
+    def __init__(self, major: int, minor: int, patch: int):
+        self.major = major
+        self.minor = minor
+        self.patch = patch
+
+    def __len__(self) -> int:
+        return 3
+
+    def __iter__(self) -> Iterator[int]:
+        return iter((self.major, self.minor, self.patch))
+
+    def __str__(self) -> str:
+        return ".".join(str(i) for i in self)
+
+    @classmethod
+    def from_version_num(cls, version_num: int) -> "Version":
+        version = [(version_num & (16 ** (4 * i) - 1)) >> ((i - 1) * 16) for i in range(3, 0, -1)]
+        return cls(*version)
+
+    @property
+    def version_num(self) -> int:
+        return sum(part << (len(self) - i) * 16 for i, part in enumerate(self, 1))

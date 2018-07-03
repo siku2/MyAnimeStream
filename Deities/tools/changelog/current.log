@@ -1,6 +1,5 @@
 version: 1.4.5;
 ---
-ADDED: Preloading next episode to make transition quicker;
-CHANGED: Streams now cache posters even if they don't have any links;
-CHANGED: Stream selection isn't greedy anymore but returns when finding the first working stream;
-FIXED: Timeout error for broken streams;
+CHANGED: Changed "v.x.y.z" to "vx.y.z". You can thank me later!;
+CHANGED: Following the semantic versioning scheme now;
+CHANGED[1]: Restructured some of the api endpoints;
