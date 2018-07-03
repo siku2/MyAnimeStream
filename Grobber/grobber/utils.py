@@ -1,5 +1,5 @@
 __all__ = ["create_response", "error_response", "cast_argument", "add_http_scheme", "parse_js_json", "thread_pool", "wait_for_first",
-           "ChangelogEntry", "Version"]
+           "ChangelogEntry", "Version", "external_url_for"]
 
 import concurrent.futures
 import json
@@ -9,7 +9,7 @@ from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Iterator, List, Optional, TypeVar
 
-from flask import Response, jsonify
+from flask import Response, current_app, jsonify, url_for
 
 from .exceptions import GrobberException
 
@@ -109,3 +109,10 @@ class Version:
     @property
     def version_num(self) -> int:
         return sum(part << (len(self) - i) * 16 for i, part in enumerate(self, 1))
+
+
+def external_url_for(endpoint, **kwargs):
+    kwargs["_external"] = False
+    kwargs["_scheme"] = None
+    url = url_for(endpoint, **kwargs)
+    return current_app.config["HOST_URL"] + url

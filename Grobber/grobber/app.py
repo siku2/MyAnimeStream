@@ -3,7 +3,7 @@ import os
 from operator import attrgetter, methodcaller
 
 import raven
-from flask import Flask, Response, redirect, request, url_for
+from flask import Flask, Response, redirect, request
 from raven.conf import setup_logging
 from raven.contrib.flask import Sentry
 from raven.handlers.logging import SentryHandler
@@ -19,7 +19,7 @@ from .utils import *
 
 log = logging.getLogger(__name__)
 
-app = Flask(__name__)
+app = Flask("grobber", static_url_path="/")
 sentry_client = raven.Client(release=__info__.__version__)
 Sentry(app, sentry_client)
 sentry_handler = SentryHandler(sentry_client)
@@ -41,7 +41,11 @@ app.register_blueprint(templates)
 app.register_blueprint(users)
 app.register_blueprint(forward)
 
-app.config["SERVER_NAME"] = os.getenv("SERVER_NAME")
+try:
+    app.config["HOST_URL"] = add_http_scheme(os.environ["HOST_URL"])
+    app.config["USERSCRIPT_LOCATION"] = os.environ["USERSCRIPT_LOCATION"]
+except KeyError as e:
+    raise KeyError(f"Missing env variable key: {e.args[0]}. Please set it and restart")
 
 log.info(f"Grobber version {__info__.__version__} running!")
 
@@ -52,7 +56,7 @@ def handle_grobber_exception(e: GrobberException) -> Response:
 
 
 @app.teardown_appcontext
-def teardown_appcontext(error):
+def teardown_appcontext(*_):
     proxy.teardown()
     sources.save_dirty()
 
@@ -61,6 +65,16 @@ def teardown_appcontext(error):
 def after_request(response: Response) -> Response:
     response.headers["Grobber-Version"] = __info__.__version__
     return response
+
+
+@app.context_processor
+def inject_jinja_globals():
+    return dict(url_for=external_url_for)
+
+
+@app.route("/download")
+def get_userscript() -> Response:
+    return redirect(app.config["USERSCRIPT_LOCATION"])
 
 
 @app.route("/search/<query>")
@@ -123,5 +137,5 @@ def get_episode_poster(uid: UID, index: int) -> Response:
     if not anime:
         raise UIDUnknown(uid)
     episode = anime[index]
-    poster = episode.poster or url_for("static", filename="images/default_poster.png", _external=True)
+    poster = episode.poster or external_url_for("static", filename="images/default_poster", _external=True)
     return redirect(poster)
