@@ -45,7 +45,6 @@ def build(source_dir: str, output_dir: str, options: Dict[str, Any] = None):
             print(f"processing {script.fileid}")
             process_script(script, config.processor)
 
-
     print(">>> MERGING")
     with Indenter():
         built_script = merge(scripts, config.merger)
