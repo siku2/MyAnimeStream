@@ -13,23 +13,23 @@ const _config = {
     }
 };
 let _configReady = false;
+let _configLoader;
 
 const _configHandler = {
     get(obj, prop) {
-        if (prop in obj) {
+        if (prop in obj && Object.keys(default_config).indexOf(prop) < 0) {
             return obj[prop];
         } else {
             return (async () => {
-                if (prop === "all") {
-                    if (!_configReady) {
-                        await loadConfig();
-                        _configReady = true;
-                    }
-                    return _config;
-                }
                 if (!_configReady) {
-                    await loadConfig();
+                    if (!_configLoader) {
+                        _configLoader = loadConfig();
+                    }
+                    await _configLoader;
                     _configReady = true;
+                }
+                if (prop === "all") {
+                    return _config;
                 }
                 return _config[prop];
             })();

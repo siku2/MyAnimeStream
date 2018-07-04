@@ -122,6 +122,18 @@ def get_anime_state(uid: UID) -> Response:
     return create_response(data=anime.state)
 
 
+@app.route("/anime/<UID:uid>/<int:index>/preload")
+def preload_episode(uid: UID, index: int) -> Response:
+    anime = sources.get_anime(uid)
+    if not anime:
+        raise UIDUnknown(uid)
+    episode = anime[index]
+    return create_response(
+        stream=episode.stream.links,
+        poster=episode.poster
+    )
+
+
 @app.route("/anime/<UID:uid>/<int:index>/state")
 def get_episode_state(uid: UID, index: int) -> Response:
     anime = sources.get_anime(uid)
@@ -137,5 +149,5 @@ def get_episode_poster(uid: UID, index: int) -> Response:
     if not anime:
         raise UIDUnknown(uid)
     episode = anime[index]
-    poster = episode.poster or external_url_for("static", filename="images/default_poster", _external=True)
+    poster = episode.poster or external_url_for("static", filename="images/default_poster")
     return redirect(poster)

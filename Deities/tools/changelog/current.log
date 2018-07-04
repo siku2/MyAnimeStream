@@ -3,3 +3,6 @@ version: 1.4.5;
 CHANGED: Changed "v.x.y.z" to "vx.y.z". You can thank me later!;
 CHANGED: Following the semantic versioning scheme now;
 CHANGED[1]: Restructured some of the api endpoints;
+CHANGED: Storing previous episode count on the server to ensure cross-device flow(????);
+FIXED[1]: 9Anime changed their encryption... again! Using a different approach through a seperate server now;
+REMOVED: Since keeping fullscreen across episodes didn't work anyway, it was removed;

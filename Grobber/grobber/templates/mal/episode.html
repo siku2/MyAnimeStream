@@ -11,9 +11,7 @@
         </div>
         <div class="contents-video-embed">
             <div class="video-embed clearfix">
-                {% if episode.stream %}
-                    {% include "player.html" %}
-                {% endif %}
+                {% include "player.html" %}
             </div>
             <div class="po-r clearfix">
                 <a href="javascript:void(0);" class="btn-video-anime-slide hori js-btn-video-anime-slide" data-dir="prev"
@@ -25,7 +23,7 @@
                             {% for _ in range(episode_count) %}
                                 <li class="btn-anime {% if loop.index0 == index %}play{% endif %}">
                                     <a href="{{ loop.index }}" class="link clearfix">
-                                        <img src="http://www.stylemefancy.com/wp-content/themes/pinnace12/assets/images/no-thumbnail-medium.png"
+                                        <img src="{{ external_url_for("static", filename="images/default_poster") }}"
                                              alt=""
                                              class="fl-l" width="100" height="67"><!---->
                                         <div class="text">
