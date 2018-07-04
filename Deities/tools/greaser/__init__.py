@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from .merger import combine, merge
-from .processor import process
+from .processor import process, process_script
 from .scraper import scrape
 
 __version__ = "0.0.4"
@@ -38,6 +38,13 @@ def build(source_dir: str, output_dir: str, options: Dict[str, Any] = None):
         print(f"Scraped directory. Found {len(scripts)} script file(s)")
         if options is not None:
             config.settings.update(options)
+
+    print(">>> PROCESSING FILES")
+    with Indenter():
+        for script in scripts.values():
+            print(f"processing {script.fileid}")
+            process_script(script, config.processor)
+
 
     print(">>> MERGING")
     with Indenter():
