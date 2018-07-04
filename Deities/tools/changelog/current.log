@@ -1,2 +1,3 @@
 version: 1.5.1;
 ---
+FIXED: Rapidvideo poster now has better error handling;

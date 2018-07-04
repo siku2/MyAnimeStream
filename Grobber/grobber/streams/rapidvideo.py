@@ -11,10 +11,12 @@ class RapidVideo(Stream):
 
     @cached_property
     def poster(self) -> Optional[str]:
-        link = self._req.bs.select_one("video#videojs").attrs.get("poster")
+        link_container = self._req.bs.select_one("video#videojs")
+        if not link_container:
+            return None
+        link = link_container.attrs.get("poster")
         if link and Request(link).head_success:
             return link
-        return None
 
     @cached_property
     def links(self) -> List[str]:
