@@ -65,7 +65,7 @@ function versionBiggerThan(a, b) {
 }
 
 function safeMongoKey(key) {
-    return key.replace(/\./g, "")
+    return key.replace(/\./g, "");
 }
 
 $(document).ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {

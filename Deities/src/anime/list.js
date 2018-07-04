@@ -4,7 +4,7 @@ class AnimeListEntry {
     }
 
     get name() {
-        return this.el.find("td.title a.link").text()
+        return this.el.find("td.title a.link").text();
     }
 
     get safeName() {
