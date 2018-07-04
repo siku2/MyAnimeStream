@@ -86,7 +86,7 @@ class AnimeListEntry {
         }
         else if (await this.uid) {
             text = "uid invalid";
-            explanation = "There was an UID cached but the server didn't accept it. Just open the anime page and it should fix itself";
+            explanation = "There was a UID cached but the server didn't accept it. Just open the anime page and it should fix itself";
         } else {
             text = "unknown uid";
             explanation = "There was no UID cached. Just open the anime page and it should fix itself";

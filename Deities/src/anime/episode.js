@@ -60,7 +60,7 @@ async function onPageLeave() {
         }
 
         const url = new URL(window.location.href);
-        url.delete("autoplay");
+        url.searchParams.delete("autoplay");
         history.pushState(null, null, url.toString());
     }
 }
