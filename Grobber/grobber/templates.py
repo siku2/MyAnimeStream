@@ -3,7 +3,7 @@ from operator import attrgetter
 from typing import Dict
 
 import mistune
-from flask import Blueprint, Response, redirect, render_template, request
+from flask import Blueprint, Response, render_template, request
 
 from . import proxy, sources
 from .exceptions import GrobberException, InvalidRequest, UIDUnknown
@@ -54,9 +54,6 @@ def player(uid: UID, index: int) -> Response:
     except GrobberException as e:
         return error_response(e)
 
-    if not episode.stream:
-        return redirect(episode.host_url)
-
     return render_template("player.html", episode=episode, uid=uid, index=index)
 
 
@@ -80,8 +77,6 @@ def mal_episode(uid: UID, index: int) -> Response:
     except GrobberException as e:
         return error_response(e)
 
-    if not episode.stream:
-        pass
     return render_template("mal/episode.html", episode=episode, uid=uid, index=index, episode_count=anime.episode_count)
 
 
