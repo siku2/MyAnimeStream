@@ -129,7 +129,7 @@ def preload_episode(uid: UID, index: int) -> Response:
         raise UIDUnknown(uid)
     episode = anime[index]
     return create_response(
-        stream=episode.stream.links,
+        stream=episode.stream.links if episode.stream else episode.host_url,
         poster=episode.poster
     )
 

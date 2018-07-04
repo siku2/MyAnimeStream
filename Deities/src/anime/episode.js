@@ -60,7 +60,7 @@ async function onPageLeave() {
         }
 
         const url = new URL(window.location.href);
-        url.delete("autoplay");
+        url.searchParams.delete("autoplay");
         history.pushState(null, null, url.toString());
     }
 }
@@ -129,7 +129,6 @@ async function showAnimeEpisode() {
 
         if (await config.replaceStream) {
             console.log("Manipulating player");
-            embedContainer;
             createPlayer(embedContainer);
 
             $("div.information-right.fl-r.clearfix").remove(); // Provided by Crunchyroll removal

@@ -1,0 +1,7 @@
+version: 1.5.1;
+release: 2018-07-04 14:27;
+---
+FIXED: Fixed typo "an uid";
+FIXED: Player embeds for episodes without working streams;
+FIXED: Preload now returns host url when there's no working streams;
+FIXED: Fixed setting current episode as watched when past required watch time;
