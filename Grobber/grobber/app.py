@@ -45,7 +45,7 @@ try:
     app.config["HOST_URL"] = add_http_scheme(os.environ["HOST_URL"])
     app.config["USERSCRIPT_LOCATION"] = os.environ["USERSCRIPT_LOCATION"]
 except KeyError as e:
-    raise KeyError(f"Missing env variable key: {e.args[0]}. Please set it and restart")
+    raise KeyError(f"Missing env variable key: {e.args[0]}. Please set it and restart") from None
 
 log.info(f"Grobber version {__info__.__version__} running!")
 
