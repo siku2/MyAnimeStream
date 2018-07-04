@@ -23,7 +23,7 @@
                             {% for _ in range(episode_count) %}
                                 <li class="btn-anime {% if loop.index0 == index %}play{% endif %}">
                                     <a href="{{ loop.index }}" class="link clearfix">
-                                        <img src="{{ external_url_for("static", filename="images/default_poster") }}"
+                                        <img src="{{ url_for("static", filename="images/default_poster") }}"
                                              alt=""
                                              class="fl-l" width="100" height="67"><!---->
                                         <div class="text">
