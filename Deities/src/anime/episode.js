@@ -129,7 +129,6 @@ async function showAnimeEpisode() {
 
         if (await config.replaceStream) {
             console.log("Manipulating player");
-            embedContainer;
             createPlayer(embedContainer);
 
             $("div.information-right.fl-r.clearfix").remove(); // Provided by Crunchyroll removal
