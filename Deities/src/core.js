@@ -26,6 +26,7 @@ function init() {
     addUserContext();
 
     route();
+    throw Error("testing if it get's picked up");
 }
 
 function _init() {
@@ -38,10 +39,7 @@ if (ravenDSN) {
         tags: {
             manager_version: GM_info.version
         },
-        ignoreErrors: [
-            "\"isTrusted\":",
-            "rubiconClickTracking is not defined"
-        ]
+        whitelistUrls: [/userscript\.html/g]
     }).install();
 
     console.info("Using Raven DSN!");

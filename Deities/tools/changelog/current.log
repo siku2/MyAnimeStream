@@ -1,4 +1,5 @@
 version: 1.5.1;
 ---
+CHANGED: Now only reporting "actual" Deities errors to Sentry;
 FIXED: Rapidvideo poster now has better error handling;
 FIXED: Calling the correct function in episode template now;
