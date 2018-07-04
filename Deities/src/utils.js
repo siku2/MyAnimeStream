@@ -64,6 +64,10 @@ function versionBiggerThan(a, b) {
     }
 }
 
+function safeMongoKey(key) {
+    return key.replace(/\./g, "")
+}
+
 $(document).ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
     Raven.captureMessage(thrownError || jqXHR.statusText, {
         extra: {
