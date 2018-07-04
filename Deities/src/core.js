@@ -26,7 +26,6 @@ function init() {
     addUserContext();
 
     route();
-    throw Error("testing if it get's picked up");
 }
 
 function _init() {
