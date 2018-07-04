@@ -4,7 +4,7 @@ class AnimeListEntry {
     }
 
     get name() {
-        return this.el.find("td.title a.link").text();
+        return this.el.find("td.title a.link").text().replace(".", "");
     }
 
     get link() {
@@ -131,8 +131,12 @@ async function getCurrentlyWatchingAnimeList() {
     return watchingList;
 }
 
-function displayCachedAnimeList(list) {
-    const cachedList = JSON.parse(localStorage.getItem("cachedAnimeList"));
+async function displayCachedAnimeList(list) {
+    if (!username) {
+        console.log("not logged in -> not caching anime list");
+    }
+    const resp = await $.getJSON(grobberUrl + "/user/" + username + "/episodes");
+    const cachedList = resp.episodes;
     if (!cachedList) {
         console.debug("No Anime List cached");
         return;
@@ -148,7 +152,11 @@ function displayCachedAnimeList(list) {
     }
 }
 
-function cacheAnimeList(list) {
+async function cacheAnimeList(list) {
+    if (!username) {
+        console.log("not logged in -> not caching anime list");
+    }
+
     const cachedList = {};
     for (const anime of list) {
         cachedList[anime.name] = {
@@ -157,11 +165,10 @@ function cacheAnimeList(list) {
             previousLatestEpisode: anime.previousLatestEpisode
         };
     }
-    localStorage.setItem("cachedAnimeList", JSON.stringify(cachedList));
+    await postJSON(grobberUrl + "/user/" + username + "/episodes", cachedList);
 }
 
 async function highlightAnimeWithUnwatchedEpisodes() {
-    console.warn("running");
     injectBalloonCSS();
     $.injectCSS({
         ".episode-status.new-episode": {
@@ -172,7 +179,7 @@ async function highlightAnimeWithUnwatchedEpisodes() {
 
     const watchingList = await getCurrentlyWatchingAnimeList();
 
-    displayCachedAnimeList(watchingList);
+    const cacheDisplayPromise = displayCachedAnimeList(watchingList);
 
     const uids = {};
     for (const item of watchingList) {
@@ -186,6 +193,7 @@ async function highlightAnimeWithUnwatchedEpisodes() {
         return;
     }
 
+    await cacheDisplayPromise;
     Object.entries(resp.anime).forEach(([uid, epCount]) => uids[uid].latestEpisode = epCount);
     watchingList.forEach((anime) => anime.show());
 

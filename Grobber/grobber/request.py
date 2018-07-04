@@ -53,11 +53,15 @@ class Request:
             data["params"] = self._params
         if self._headers:
             data["headers"] = self._params
+        if self._timeout:
+            data["timeout"] = self._timeout
+        if self.request_kwargs:
+            data["options"] = self.request_kwargs
         return data
 
     @classmethod
     def from_state(cls, state: dict) -> "Request":
-        inst = cls(state["url"], state.get("params", None))
+        inst = cls(state["url"], state.get("params"), state.get("headers"), state.get("timeout"), **state.get("options", {}))
         return inst
 
     @property
@@ -100,7 +104,7 @@ class Request:
     def head_response(self) -> requests.Response:
         if hasattr(self, "_response"):
             return self.response
-        timeout = self._timeout or 5
+        timeout = self._timeout or 3
         return requests.head(self.url, headers=self.headers, verify=False, timeout=timeout, **self.request_kwargs)
 
     @cached_property

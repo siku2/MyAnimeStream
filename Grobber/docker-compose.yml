@@ -11,7 +11,9 @@ services:
     networks:
       - backend
     environment:
-      - "MONGO_URI=mongodb://database:27017"
+      - MONGO_URI=mongodb://database:27017
+      - USERSCRIPT_LOCATION=https://github.com/siku2/MyAnimeStream/raw/master/Deities/dist/myanimestream.user.js
+      - HOST_URL=localhost
       - SENTRY_DSN
     depends_on:
       - database

@@ -1,11 +1,11 @@
 userscript:
   name:         MyAnimeStream
   author:       siku2
-  version:      1.4.5
+  version:      1.5.0
   description:  Get the most out of MyAnimeList by turning the page into a streaming site.
   homepage:     https://siku2.github.io/
-  downloadURL:  https://github.com/siku2/MyAnimeStream/raw/master/Deities/dist/myanimestream.user.js
-  icon:         https://myanimelist.cdn-dena.com/img/sp/icon/apple-touch-icon-256.png
+  downloadURL:  https://mas.dokkeral.com/download
+  icon:         https://mas.dokkeral.com/images/logo
   include:      /^http(?:s)?\:\/\/myanimelist\.net.*$/
   noframes:     true
   run-at:       document-start

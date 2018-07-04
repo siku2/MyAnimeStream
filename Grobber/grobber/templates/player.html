@@ -1,8 +1,12 @@
 <meta name="referrer" content="no-referrer"/>
-<link rel="stylesheet" href="https://cdn.plyr.io/3.3.10/plyr.css">
+{% if episode.stream %}
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.3.10/plyr.css">
 
-<video id="player" poster="{{ episode.poster or "" }}" playsinline controls data-plyr-config=''>
-    {% for link in episode.stream %}
-        <source src="{{ link }}">
-    {% endfor %}
-</video>
+    <video id="player" poster="{{ url_for("get_episode_poster", uid=uid, index=index) }}" playsinline controls data-plyr-config=''>
+        {% for link in episode.stream %}
+            <source src="{{ link }}">
+        {% endfor %}
+    </video>
+{% else %}
+    <iframe src="{{ episode.host_url }}"></iframe>
+{% endif %}

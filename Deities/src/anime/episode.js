@@ -44,9 +44,6 @@ async function onVideoEnd() {
     if (currentEpisodeIndex + 1 <= animeEpisodes) {
         const url = new URL((currentEpisodeIndex + 1).toString(), window.location.href);
         url.searchParams.set("autoplay", "true");
-        if (currentPlayer.fullscreen.active) {
-            url.searchParams.set("fullscreen", "true");
-        }
         window.location.href = url.toString();
     } else {
         console.log("reached the last episode");
@@ -64,7 +61,6 @@ async function onPageLeave() {
 
         const url = new URL(window.location.href);
         url.delete("autoplay");
-        url.delete("fullscreen");
         history.pushState(null, null, url.toString());
     }
 }
@@ -77,19 +73,16 @@ function setupPlyr() {
         if (url.searchParams.get("autoplay") === "true") {
             currentPlayer.play();
         }
-        if (url.searchParams.get("fullscreen") === "true") {
-            currentPlayer.fullscreen.enter();
-        }
 
         currentPlayer.on("ended", onVideoEnd);
         window.addEventListener("beforeunload", onPageLeave);
     } else {
-        console.warn("Couldn't find player, assuming this is an embed!");
+        console.warn("Couldn't find player, assuming this is an iframe!");
     }
 }
 
 async function createPlayer(container) {
-    const html = await $.get(grobberUrl + "/stream/" + animeUID + "/" + (currentEpisodeIndex - 1).toString());
+    const html = await $.get(grobberUrl + "/templates/player/" + animeUID + "/" + (currentEpisodeIndex - 1).toString());
     container.html(html);
     setupPlyr();
 }
@@ -97,7 +90,7 @@ async function createPlayer(container) {
 
 function prefetchNextEpisode() {
     console.log("prefetching next episode");
-    $.get(grobberUrl + "/stream/" + animeUID + "/" + currentEpisodeIndex.toString());
+    $.get(grobberUrl + "/anime/" + animeUID + "/" + currentEpisodeIndex.toString() + "/preload");
 }
 
 
@@ -106,15 +99,6 @@ async function showAnimeEpisode() {
     const embedContainer = $("div.video-embed.clearfix");
 
     if (embedContainer.length > 0) {
-        if (await config.replaceStream) {
-            console.log("Manipulating player");
-            createPlayer(embedContainer);
-
-            $("div.information-right.fl-r.clearfix").remove(); // Provided by Crunchyroll removal
-        } else {
-            console.info("Not changing player because of user settings");
-        }
-
         document.querySelector("div.di-b>a").setAttribute("href", "../episode"); // show all episodes shouldn't link to "videos"
 
         const episodeSlideCount = parseInt($("li.btn-anime:last span.episode-number")[0].innerText.split(" ")[1]);
@@ -129,7 +113,7 @@ async function showAnimeEpisode() {
             episodePrefab.find("div.text")
                 .html("<span class=\"episode-number\"></span>");
             episodePrefab.find("img.fl-l")
-                .attr("src", "http://www.stylemefancy.com/wp-content/themes/pinnace12/assets/images/no-thumbnail-medium.png");
+                .attr("src", grobberUrl + "/images/default_poster");
 
             for (let i = episodeSlideCount; i < animeEpisodes; i++) {
                 const episodeObject = episodePrefab.clone();
@@ -141,6 +125,16 @@ async function showAnimeEpisode() {
 
                 episodeObject.appendTo(episodeSlide);
             }
+        }
+
+        if (await config.replaceStream) {
+            console.log("Manipulating player");
+            embedContainer;
+            createPlayer(embedContainer);
+
+            $("div.information-right.fl-r.clearfix").remove(); // Provided by Crunchyroll removal
+        } else {
+            console.info("Not changing player because of user settings");
         }
     } else {
         console.log("Creating new video embed and page content");

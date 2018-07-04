@@ -3,10 +3,10 @@
         <div class="di-t w100 mb8" style="background-color:#f6f6f6">
             <div class="di-tc va-m pt4 pb4 pl8">
                 <h2 class="fs18 lh11" style="border-width:0 0 0 0; margin:0 30px 0 0; padding:0;">
-                    <span class="fw-n">#{{ episode_index + 1 }}<span class="episode_number"></span> - </span>Episode {{ episode_index + 1 }}</h2>
+                    <span class="fw-n">#{{ index + 1 }}<span class="episode_number"></span> - </span>Episode {{ index + 1 }}</h2>
             </div>
             <div id="ep_edit_btn" class="di-tc pt4 pb4 pl8 pr8 ar fn-grey2" style="white-space: nowrap;"><span class="di-ib pb4"><a
-                    href="{{ episode_index + 1 }}/edit">Edit</a></span>
+                    href="{{ index + 1 }}/edit">Edit</a></span>
             </div>
         </div>
         <div class="contents-video-embed">
@@ -21,13 +21,13 @@
                     <div class="video-anime-slide-outer js-video-anime-slide-outer" data-slide="3">
                         <ul id="vue-video-slide" class="video-anime-slide js-video-anime-slide">
                             {% for _ in range(episode_count) %}
-                                <li class="btn-anime {% if loop.index0 == episode_index %}play{% endif %}">
+                                <li class="btn-anime {% if loop.index0 == index %}play{% endif %}">
                                     <a href="{{ loop.index }}" class="link clearfix">
-                                        <img src="http://www.stylemefancy.com/wp-content/themes/pinnace12/assets/images/no-thumbnail-medium.png"
+                                        <img src="{{ external_url_for("static", filename="images/default_poster") }}"
                                              alt=""
                                              class="fl-l" width="100" height="67"><!---->
                                         <div class="text">
-                                            {% if loop.index0 == episode_index %}<i class="fa fa-play-circle-o icon-play mr4"></i>{% endif %}
+                                            {% if loop.index0 == index %}<i class="fa fa-play-circle-o icon-play mr4"></i>{% endif %}
                                             Episode {{ loop.index }}
                                         </div>
                                     </a>

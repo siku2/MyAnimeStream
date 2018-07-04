@@ -11,6 +11,7 @@ from .request import Request
 
 log = logging.getLogger(__name__)
 
+_DEFAULT = object()
 VALID_BSON_TYPES = (dict, list, tuple, bson.ObjectId, datetime, re._pattern_type, str, int, float, bool, bytes, type(None))
 BsonType = TypeVar("JsonType", *VALID_BSON_TYPES)
 
@@ -67,8 +68,8 @@ class Stateful(abc.ABC):
         if self.INCLUDE_CLS:
             data["cls"] = f"{type(self).__module__}.{type(self).__qualname__}"
         for attr in self.ATTRS:
-            val = getattr(self, "_" + attr, None)
-            if val is not None:
+            val = getattr(self, "_" + attr, _DEFAULT)
+            if val is not _DEFAULT:
                 if not check_container_bson(val):
                     val = self.serialise_special(attr, val)
                     attr += self.__SPECIAL_MARKER

@@ -1,43 +1,16 @@
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 from operator import attrgetter
-from typing import Dict, Iterator
+from typing import Dict
 
 import mistune
-from flask import Blueprint, Response, render_template, request
+from flask import Blueprint, Response, redirect, render_template, request
 
 from . import proxy, sources
-from .exceptions import GrobberException, InvalidRequest, StreamNotFound, UIDUnknown
+from .exceptions import GrobberException, InvalidRequest, UIDUnknown
 from .models import UID
 from .utils import *
 
 templates = Blueprint("templates", __name__, url_prefix="/templates")
-
-ChangelogEntry = namedtuple("ChangelogEntry", ("text", "priority", "version", "date"))
-
-
-class Version:
-    def __init__(self, major: int, minor: int, patch: int):
-        self.major = major
-        self.minor = minor
-        self.patch = patch
-
-    def __len__(self) -> int:
-        return 3
-
-    def __iter__(self) -> Iterator[int]:
-        return iter((self.major, self.minor, self.patch))
-
-    def __str__(self) -> str:
-        return ".".join(str(i) for i in self)
-
-    @classmethod
-    def from_version_num(cls, version_num: int) -> "Version":
-        version = [(version_num & (16 ** (4 * i) - 1)) >> ((i - 1) * 16) for i in range(3, 0, -1)]
-        return cls(*version)
-
-    @property
-    def version_num(self) -> int:
-        return sum(part << (len(self) - i) * 16 for i, part in enumerate(self, 1))
 
 
 @templates.route("/changelog/<from_version>/<to_version>")
@@ -82,9 +55,9 @@ def player(uid: UID, index: int) -> Response:
         return error_response(e)
 
     if not episode.stream:
-        return error_response(StreamNotFound())
+        return redirect(episode.host_url)
 
-    return render_template("player.html", episode=episode)
+    return render_template("player.html", episode=episode, uid=uid, index=index)
 
 
 @templates.route("/mal/episode/<UID:uid>")
@@ -106,8 +79,10 @@ def mal_episode(uid: UID, index: int) -> Response:
         episode = anime[index]
     except GrobberException as e:
         return error_response(e)
-    else:
-        return render_template("mal/episode.html", episode=episode, episode_count=anime.episode_count, episode_index=index)
+
+    if not episode.stream:
+        pass
+    return render_template("mal/episode.html", episode=episode, uid=uid, index=index, episode_count=anime.episode_count)
 
 
 @templates.route("/mal/settings")

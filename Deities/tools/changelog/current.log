@@ -1,6 +1,2 @@
-version: 1.4.5;
+version: 1.5.0;
 ---
-ADDED: Preloading next episode to make transition quicker;
-CHANGED: Streams now cache posters even if they don't have any links;
-CHANGED: Stream selection isn't greedy anymore but returns when finding the first working stream;
-FIXED: Timeout error for broken streams;

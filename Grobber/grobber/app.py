@@ -1,8 +1,9 @@
 import logging
+import os
 from operator import attrgetter, methodcaller
 
 import raven
-from flask import Flask, Response, redirect, render_template, request
+from flask import Flask, Response, redirect, request
 from raven.conf import setup_logging
 from raven.contrib.flask import Sentry
 from raven.handlers.logging import SentryHandler
@@ -18,7 +19,7 @@ from .utils import *
 
 log = logging.getLogger(__name__)
 
-app = Flask(__name__)
+app = Flask("grobber", static_url_path="/")
 sentry_client = raven.Client(release=__info__.__version__)
 Sentry(app, sentry_client)
 sentry_handler = SentryHandler(sentry_client)
@@ -40,6 +41,12 @@ app.register_blueprint(templates)
 app.register_blueprint(users)
 app.register_blueprint(forward)
 
+try:
+    app.config["HOST_URL"] = add_http_scheme(os.environ["HOST_URL"])
+    app.config["USERSCRIPT_LOCATION"] = os.environ["USERSCRIPT_LOCATION"]
+except KeyError as e:
+    raise KeyError(f"Missing env variable key: {e.args[0]}. Please set it and restart") from None
+
 log.info(f"Grobber version {__info__.__version__} running!")
 
 
@@ -49,7 +56,7 @@ def handle_grobber_exception(e: GrobberException) -> Response:
 
 
 @app.teardown_appcontext
-def teardown_appcontext(error):
+def teardown_appcontext(*_):
     proxy.teardown()
     sources.save_dirty()
 
@@ -58,6 +65,16 @@ def teardown_appcontext(error):
 def after_request(response: Response) -> Response:
     response.headers["Grobber-Version"] = __info__.__version__
     return response
+
+
+@app.context_processor
+def inject_jinja_globals():
+    return dict(url_for=external_url_for)
+
+
+@app.route("/download")
+def get_userscript() -> Response:
+    return redirect(app.config["USERSCRIPT_LOCATION"])
 
 
 @app.route("/search/<query>")
@@ -77,14 +94,6 @@ def search(query: str) -> Response:
     return create_response(anime=ser_results)
 
 
-@app.route("/anime/<UID:uid>")
-def get_anime(uid: UID) -> Response:
-    anime = sources.get_anime(uid)
-    if not anime:
-        raise UIDUnknown(uid)
-    return create_response(anime.to_dict())
-
-
 @app.route("/anime/episode-count", methods=("POST",))
 def get_anime_episode_count() -> Response:
     anime_uids = request.json
@@ -97,22 +106,48 @@ def get_anime_episode_count() -> Response:
     return create_response(anime=dict(anime_counts))
 
 
-@app.route("/stream/<UID:uid>/<int:index>")
-def get_stream_for_episode(uid: UID, index: int) -> Response:
+@app.route("/anime/<UID:uid>")
+def get_anime(uid: UID) -> Response:
+    anime = sources.get_anime(uid)
+    if not anime:
+        raise UIDUnknown(uid)
+    return create_response(anime.to_dict())
+
+
+@app.route("/anime/<UID:uid>/state")
+def get_anime_state(uid: UID) -> Response:
+    anime = sources.get_anime(uid)
+    if not anime:
+        raise UIDUnknown(uid)
+    return create_response(data=anime.state)
+
+
+@app.route("/anime/<UID:uid>/<int:index>/preload")
+def preload_episode(uid: UID, index: int) -> Response:
     anime = sources.get_anime(uid)
     if not anime:
         raise UIDUnknown(uid)
     episode = anime[index]
-    if episode.stream:
-        return render_template("player.html", episode=episode)
-    else:
-        return redirect(episode.host_url)
+    return create_response(
+        stream=episode.stream.links,
+        poster=episode.poster
+    )
 
 
-@app.route("/stream/<UID:uid>/<int:index>/poster")
+@app.route("/anime/<UID:uid>/<int:index>/state")
+def get_episode_state(uid: UID, index: int) -> Response:
+    anime = sources.get_anime(uid)
+    if not anime:
+        raise UIDUnknown(uid)
+    episode = anime[index]
+    return create_response(data=episode.state)
+
+
+@app.route("/anime/<UID:uid>/<int:index>/poster")
 def get_episode_poster(uid: UID, index: int) -> Response:
     anime = sources.get_anime(uid)
     if not anime:
         raise UIDUnknown(uid)
     episode = anime[index]
-    return redirect(episode.poster)
+    poster = episode.poster or external_url_for("static", filename="images/default_poster")
+    return redirect(poster)

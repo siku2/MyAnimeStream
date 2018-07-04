@@ -7,13 +7,14 @@ from . import register_stream
 from ..decorators import cached_property
 from ..models import Stream
 from ..request import Request
+from ..stateful import Expiring
 
 log = logging.getLogger(__name__)
 
 RE_EXTRACT_CODE: Pattern = re.compile(
     r"<div id=\"player\"><script type='text/javascript'>eval\(function\(p,a,c,k,e,d\){.+?}\('(.+?)',(\d+),\d+,'([\w|]+)'", re.DOTALL
 )
-RE_EXTRACT_DATA: Pattern = re.compile(r"\"file\":\s*\"(.+)\",\s*\"image\":\s*\"(.+)\",", re.DOTALL)
+RE_EXTRACT_DATA: Pattern = re.compile(r"\"file\":\s*\"(.+?)\",\s*\"image\":\s*\"(.+?)\",", re.DOTALL)
 
 
 def baseN(num, b, numerals="0123456789abcdefghijklmnopqrstuvwxyz"):
@@ -46,6 +47,7 @@ def extract_player_data(text: str) -> Optional[PlayerData]:
 
 class Mp4Upload(Stream):
     ATTRS = ("player_data",)
+    EXPIRE_TIME = Expiring.HOUR
 
     HOST = "www.mp4upload.com"
 

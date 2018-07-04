@@ -6,6 +6,7 @@ let animeEpisodes;
 
 
 async function findAnimeUID(name) {
+    name = name.replace(".", "");
     if (!_animeUidCache) {
         _animeUidCache = JSON.parse(localStorage.getItem("AnimeUIDs")) || {};
     }
@@ -17,6 +18,7 @@ async function findAnimeUID(name) {
 }
 
 async function setAnimeUID(name, uid) {
+    name = name.replace(".", "");
     const dub = (await config.dub) ? "dub" : "sub";
     _animeUidCache = JSON.parse(localStorage.getItem("AnimeUIDs")) || {};
     const cat = _animeUidCache[dub];
@@ -29,16 +31,14 @@ async function setAnimeUID(name, uid) {
     localStorage.setItem("AnimeUIDs", JSON.stringify(_animeUidCache));
 }
 
-function updatePreviousLastEpisode() {
-    const cachedList = JSON.parse(localStorage.getItem("cachedAnimeList"));
-    if (cachedList) {
-        const cachedAnime = cachedList[animeName];
-        if (cachedAnime) {
-            console.debug("set prevLatestEpisode to", animeEpisodes);
-            cachedAnime.previousLatestEpisode = animeEpisodes;
-        }
-    }
-    localStorage.setItem("cachedAnimeList", JSON.stringify(cachedList));
+async function updatePreviousLastEpisode() {
+    console.debug("set prevLatestEpisode to", animeEpisodes);
+    const name = animeName.replace(".", "");
+    const update = {};
+    update[name + ".uid"] = animeUID;
+    update[name + ".latestEpisode"] = animeEpisodes;
+    update[name + ".previousLatestEpisode"] = animeEpisodes;
+    await postJSON(grobberUrl + "/user/" + username + "/episodes", update);
 }
 
 
@@ -46,30 +46,28 @@ async function getAnimeInfo() {
     animeName = document.querySelector("h1>span[itemprop=name]").innerText;
     animeUID = await findAnimeUID(animeName);
 
+    let data;
     if (animeUID) {
-        const data = await $.getJSON(grobberUrl + "/anime/" + animeUID);
-        if (data.success) {
-            animeEpisodes = data.episodes;
-            updatePreviousLastEpisode();
-            return true;
-        } else {
+        data = await $.getJSON(grobberUrl + "/anime/" + animeUID);
+        if (!data.success) {
             console.warn("Unsuccessful request for uid \"" + animeUID + "\":", data);
         }
-    }
-    console.log("Searching for anime", animeName);
-    const result = await $.getJSON(grobberUrl + "/search/" + animeName, {
-        dub: await config.dub
-    });
-    if (!result.success || result.anime.length === 0) {
-        console.error("Couldn't find anime \"" + animeName + "\"");
-        return false;
-    }
+    } else {
+        console.log("Searching for anime", animeName);
+        const result = await $.getJSON(grobberUrl + "/search/" + animeName, {
+            dub: await config.dub
+        });
+        if (!result.success || result.anime.length === 0) {
+            console.error("Couldn't find anime \"" + animeName + "\"");
+            return false;
+        }
 
-    console.log("got answer", result);
-    const data = result.anime[0].anime;
-    animeUID = data.uid;
+        console.log("got answer", result);
+        data = result.anime[0].anime;
+        animeUID = data.uid;
+        await setAnimeUID(animeName, animeUID);
+    }
     animeEpisodes = data.episodes;
     updatePreviousLastEpisode();
-    await setAnimeUID(animeName, animeUID);
     return true;
 }

@@ -13,7 +13,7 @@ from typing import Any, Dict, Iterator, List, MutableSequence, NewType, Optional
 from .decorators import cached_property
 from .exceptions import EpisodeNotFound
 from .request import Request
-from .stateful import BsonType, Expiring, Stateful
+from .stateful import BsonType, Expiring
 from .utils import thread_pool, wait_for_first
 
 log = logging.getLogger(__name__)
@@ -42,8 +42,9 @@ class Stream(Expiring, abc.ABC):
     CHANGING_ATTRS = ("links",)
     EXPIRE_TIME = 6 * Expiring.HOUR
 
-    HOST = None
     PRIORITY = 1
+
+    HOST = None
 
     def __repr__(self) -> str:
         return f"{type(self).__name__} Stream: {self._req}"
@@ -92,8 +93,10 @@ class Stream(Expiring, abc.ABC):
         return urls
 
 
-class Episode(Stateful, abc.ABC):
-    ATTRS = ("streams", "host_url")
+class Episode(Expiring, abc.ABC):
+    ATTRS = ("streams", "host_url", "stream", "poster", "host_url")
+    CHANGING_ATTRS = ("stream", "poster", "host_url")
+    EXPIRE_TIME = Expiring.HOUR
 
     def __init__(self, req: Request):
         super().__init__(req)
@@ -149,18 +152,26 @@ class Episode(Stateful, abc.ABC):
     def serialise_special(self, key: str, value: Any) -> BsonType:
         if key == "streams":
             return [stream.state for stream in value if getattr(stream, "_links", False) or getattr(stream, "_poster", False)]
+        elif key == "stream":
+            return value.state
+
+    @classmethod
+    def get_stream(cls, data: BsonType) -> Optional[Stream]:
+        m, c = data["cls"].rsplit(".", 1)
+        module = sys.modules.get(m)
+        if module:
+            stream_cls = getattr(module, c)
+            return stream_cls.from_state(data)
 
     @classmethod
     def deserialise_special(cls, key: str, value: BsonType) -> Any:
         if key == "streams":
             streams = []
             for stream in value:
-                m, c = stream["cls"].rsplit(".", 1)
-                module = sys.modules.get(m)
-                if module:
-                    stream_cls = getattr(module, c)
-                    streams.append(stream_cls.from_state(stream))
+                streams.append(cls.get_stream(stream))
             return streams
+        elif key == "stream":
+            return cls.get_stream(value)
 
 
 class Anime(Expiring, abc.ABC):
