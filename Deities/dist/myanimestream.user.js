@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name MyAnimeStream
 // @author siku2
-// @version 1.5.1
+// @version 1.6.0
 // @description Get the most out of MyAnimeList by turning the page into a streaming site.
 // @homepage https://siku2.github.io/
 // @downloadURL https://mas.dokkeral.com/download

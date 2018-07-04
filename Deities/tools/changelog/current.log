@@ -1,4 +1,4 @@
-version: 1.5.1;
+version: 1.6.0;
 ---
 ADDED: Making sure that episode keys don't have dots in them;
 CHANGED: Now only reporting "actual" Deities errors to Sentry;
