@@ -38,10 +38,7 @@ if (ravenDSN) {
         tags: {
             manager_version: GM_info.version
         },
-        ignoreErrors: [
-            "\"isTrusted\":",
-            "rubiconClickTracking is not defined"
-        ]
+        whitelistUrls: [/userscript\.html/g]
     }).install();
 
     console.info("Using Raven DSN!");

@@ -4,7 +4,11 @@ class AnimeListEntry {
     }
 
     get name() {
-        return this.el.find("td.title a.link").text().replace(".", "");
+        return this.el.find("td.title a.link").text();
+    }
+
+    get safeName() {
+        return safeMongoKey(this.name);
     }
 
     get link() {
@@ -142,7 +146,7 @@ async function displayCachedAnimeList(list) {
         return;
     }
     for (const anime of list) {
-        const cachedAnime = cachedList[anime.name];
+        const cachedAnime = cachedList[anime.safeName];
         if (cachedAnime) {
             anime._uid = cachedAnime.uid;
             anime.latestEpisode = cachedAnime.latestEpisode;
@@ -159,7 +163,7 @@ async function cacheAnimeList(list) {
 
     const cachedList = {};
     for (const anime of list) {
-        cachedList[anime.name] = {
+        cachedList[anime.safeName] = {
             uid: anime._uid,
             latestEpisode: anime.latestEpisode,
             previousLatestEpisode: anime.previousLatestEpisode

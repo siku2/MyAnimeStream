@@ -3,10 +3,10 @@ let _animeUidCache;
 let animeName;
 let animeUID;
 let animeEpisodes;
+let animeStatus;
 
 
 async function findAnimeUID(name) {
-    name = name.replace(".", "");
     if (!_animeUidCache) {
         _animeUidCache = JSON.parse(localStorage.getItem("AnimeUIDs")) || {};
     }
@@ -18,7 +18,6 @@ async function findAnimeUID(name) {
 }
 
 async function setAnimeUID(name, uid) {
-    name = name.replace(".", "");
     const dub = (await config.dub) ? "dub" : "sub";
     _animeUidCache = JSON.parse(localStorage.getItem("AnimeUIDs")) || {};
     const cat = _animeUidCache[dub];
@@ -32,8 +31,13 @@ async function setAnimeUID(name, uid) {
 }
 
 async function updatePreviousLastEpisode() {
-    console.debug("set prevLatestEpisode to", animeEpisodes);
-    const name = animeName.replace(".", "");
+    if (animeStatus !== "WATCHING") {
+        console.log("Not watching anime");
+        return;
+    }
+
+    console.debug("setting prevLatestEpisode to", animeEpisodes);
+    const name = safeMongoKey(animeName);
     const update = {};
     update[name + ".uid"] = animeUID;
     update[name + ".latestEpisode"] = animeEpisodes;
@@ -42,9 +46,20 @@ async function updatePreviousLastEpisode() {
 }
 
 
+function determineAnimeStatus() {
+    if (document.querySelector("a#myinfo_status")) {
+        animeStatus = "ABSENT";
+    } else {
+        animeStatus = document.querySelector("select#myinfo_status > [selected]").text.toUpperCase();
+    }
+}
+
+
 async function getAnimeInfo() {
     animeName = document.querySelector("h1>span[itemprop=name]").innerText;
     animeUID = await findAnimeUID(animeName);
+
+    determineAnimeStatus();
 
     let data;
     if (animeUID) {

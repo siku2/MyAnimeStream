@@ -1,14 +1,14 @@
 userscript:
-  name:         MyAnimeStream
-  author:       siku2
-  version:      1.5.1
-  description:  Get the most out of MyAnimeList by turning the page into a streaming site.
-  homepage:     https://siku2.github.io/
-  downloadURL:  https://mas.dokkeral.com/download
-  icon:         https://mas.dokkeral.com/images/logo
-  include:      /^http(?:s)?\:\/\/myanimelist\.net.*$/
-  noframes:     true
-  run-at:       document-start
+  name:           MyAnimeStream
+  author:         siku2
+  version:        1.6.0
+  description:    Get the most out of MyAnimeList by turning the page into a streaming site.
+  homepage:       https://siku2.github.io/
+  downloadURL:    https://mas.dokkeral.com/download
+  icon:           https://mas.dokkeral.com/images/logo
+  include:        /^http(?:s)?\:\/\/myanimelist\.net.*$/
+  noframes:       true
+  run-at:         document-start
   require:
     - https://code.jquery.com/jquery-3.3.1.min.js
     - https://cdn.ravenjs.com/3.26.2/raven.min.js
@@ -18,5 +18,7 @@ userscript:
 settings:
   merger:
     order:
-      first:    "constants"
-      last:     "core"
+      first:      "constants"
+      last:       "core"
+  processor:
+    log_format:   "{script.fileid}: {message}"

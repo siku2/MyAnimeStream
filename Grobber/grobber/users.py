@@ -7,8 +7,12 @@ from .utils import *
 users = Blueprint("Users", __name__, url_prefix="/user")
 
 
+def safe_key(key: str) -> str:
+    return key.replace(".", "")
+
+
 def store_data(username: str, name: str, data: dict) -> Response:
-    data = {f"{name}.{key}": value for key, value in data.items()}
+    data = {f"{name}.{safe_key(key)}": value for key, value in data.items()}
     proxy.user_collection.update_one({"_id": username},
                                      {"$setOnInsert": {"_id": username},
                                       "$set": data,
