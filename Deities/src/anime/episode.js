@@ -14,7 +14,7 @@ async function updateAnimeStatus(update) {
     };
     Object.assign(data, update);
 
-    await $.post("/ownlist/anime/edit.json", JSON.stringify(data));
+    navigator.sendBeacon("/ownlist/anime/edit.json", JSON.stringify(data));
     status.val(data.status);
     score.val(data.score);
     numWatchedEps.val(data.num_watched_episodes);
