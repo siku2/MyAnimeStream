@@ -49,7 +49,7 @@ async function route() {
         routeAnimePage(path, params);
     } else if (path.match(/^\/animelist\/\w+$/)) {
         currentPage = PageEnum.ANIMELIST;
-        highlightAnimeWithUnwatchedEpisodes();
+        showAnimeList();
     } else if (path.match(/^\/editprofile\.php$/) && params.match(/^\?go=myanimestream$/)) {
         currentPage = PageEnum.SETTINGS;
         showSettings();

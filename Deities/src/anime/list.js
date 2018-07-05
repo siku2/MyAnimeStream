@@ -203,3 +203,28 @@ async function highlightAnimeWithUnwatchedEpisodes() {
 
     cacheAnimeList(watchingList);
 }
+
+function injectRandomAnimeButton() {
+    function openRandomAnimePage() {
+        const chosenAnime = $("tbody.list-item td.title a.link").random();
+        console.log("randomly selected \"", chosenAnime.text(), "\"");
+        window.location.href = chosenAnime.attr("href");
+    }
+
+    const showStatsBtn = $("#show-stats-button");
+    showStatsBtn
+        .clone()
+        .attr("id", "open-random-anime")
+        .html('<i class="fa fa-random"></i> Random Anime')
+        .click(openRandomAnimePage)
+        .insertBefore(showStatsBtn);
+}
+
+function showAnimeList() {
+    const statusPage = parseInt(currentURL.searchParams.get("status"));
+
+    highlightAnimeWithUnwatchedEpisodes();
+    if (statusPage === 6) {
+        injectRandomAnimeButton();
+    }
+}
