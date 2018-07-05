@@ -40,7 +40,7 @@ class Stream(Expiring, abc.ABC):
     INCLUDE_CLS = True
     ATTRS = ("links", "poster")
     CHANGING_ATTRS = ("links",)
-    EXPIRE_TIME = 6 * Expiring.HOUR
+    EXPIRE_TIME = Expiring.HOUR
 
     PRIORITY = 1
 
@@ -65,7 +65,7 @@ class Stream(Expiring, abc.ABC):
     def poster(self) -> Optional[str]:
         return None
 
-    @property
+    @cached_property
     def working(self) -> bool:
         return len(self.links) > 0
 
@@ -95,8 +95,8 @@ class Stream(Expiring, abc.ABC):
 
 class Episode(Expiring, abc.ABC):
     ATTRS = ("streams", "host_url", "stream", "poster", "host_url")
-    CHANGING_ATTRS = ("stream", "poster", "host_url")
-    EXPIRE_TIME = Expiring.HOUR
+    CHANGING_ATTRS = ATTRS
+    EXPIRE_TIME = 6 * Expiring.HOUR
 
     def __init__(self, req: Request):
         super().__init__(req)
