@@ -215,7 +215,7 @@ function injectRandomAnimeButton() {
     showStatsBtn
         .clone()
         .attr("id", "open-random-anime")
-        .html('<i class="fa fa-random"></i> Random Anime')
+        .html("<i class=\"fa fa-random\"></i> Random Anime")
         .click(openRandomAnimePage)
         .insertBefore(showStatsBtn);
 }
