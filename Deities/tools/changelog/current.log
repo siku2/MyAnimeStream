@@ -1,7 +1,2 @@
-version: 1.6.0;
+version: 1.7.0;
 ---
-ADDED: Added a button to the "Plan to Watch" section of the anime list which links to a random anime on the list;
-ADDED: Iframes can now go fullscreen and are adjusted to the page;
-CHANGED: Adjusted TTL for stream links. Should result in less embedded streams;
-FIXED: Embedded players using iframes work now. It didn't work because the links were using http instead of https;
-FIXED: Using `sendBeacon` to send episode updates which should finally fix the problem with updating the current episode index when leaving the page;

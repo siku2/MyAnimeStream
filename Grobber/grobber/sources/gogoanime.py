@@ -1,9 +1,8 @@
 import logging
+import math
 import re
 from operator import attrgetter
 from typing import Iterator, List, Optional, Tuple
-
-import math
 
 from . import register_source
 from ..decorators import cached_property
