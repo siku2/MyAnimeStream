@@ -1,3 +1,5 @@
 version: 1.6.0;
 ---
 ADDED: Added a button to the "Plan to Watch" section of the anime list which links to a random anime on the list;
+ADDED: Iframes can now go fullscreen and are adjusted to the page;
+FIXED: Embedded players using iframes work now. It didn't work because the links were using http instead of https;

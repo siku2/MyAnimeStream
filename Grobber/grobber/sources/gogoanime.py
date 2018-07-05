@@ -1,8 +1,9 @@
 import logging
-import math
 import re
 from operator import attrgetter
 from typing import Iterator, List, Optional, Tuple
+
+import math
 
 from . import register_source
 from ..decorators import cached_property
@@ -68,7 +69,7 @@ class GogoEpisode(Episode):
 
     @cached_property
     def host_url(self) -> str:
-        return add_http_scheme(self._req.bs.find("iframe")["src"])
+        return add_http_scheme(self._req.bs.find("iframe")["src"], _scheme="https")
 
 
 class GogoAnime(Anime):

@@ -48,13 +48,13 @@ def cast_argument(val: T, cls: Callable[[T], T2], default: Any = _DEFAULT) -> T2
         return new_val
 
 
-def add_http_scheme(link: str, base_url: str = None) -> str:
+def add_http_scheme(link: str, base_url: str = None, *, _scheme="http") -> str:
     if link.startswith("//"):
-        return "http:" + link
+        return f"{_scheme}:{link}"
     elif not link.startswith(("http://", "https://")):
         if base_url:
             return base_url.rstrip("/") + "/" + link
-        return "http://" + link
+        return f"{_scheme}://{link}"
     return link
 
 
