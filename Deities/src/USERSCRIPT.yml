@@ -2,7 +2,7 @@ userscript:
   name:                 MyAnimeStream
   author:               siku2
   version:              2.0.0
-  description:          Get the most out of your favourite anime site by turning the page into a streaming site.
+  description:          Get the most out of your favourite anime site by turning it into a streaming site.
   homepage:             https://mas.dokkeral.com/
   downloadURL:          https://mas.dokkeral.com/download
   icon:                 https://mas.dokkeral.com/images/logo
