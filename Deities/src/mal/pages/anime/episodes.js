@@ -1,10 +1,14 @@
+import {anime} from "../../../api";
+import {grobberUrl} from "../../../constants";
+import {currentURL} from "../../../core";
+
 function fixEpisodePagination(offset) {
     const paginationEl = document.querySelector("div.pagination");
     if (paginationEl) {
         console.log("removing existing pagination");
         paginationEl.parentElement.remove();
     }
-    if (animeEpisodes <= 100) {
+    if (anime.episodesAvailable <= 100) {
         console.log("no pagination needed");
         return;
     }
@@ -17,18 +21,18 @@ function fixEpisodePagination(offset) {
         );
     }
 
-    for (let off = Math.max(offset - 200, 0); off < Math.min(offset + 300, animeEpisodes); off += 100) {
+    for (let off = Math.max(offset - 200, 0); off < Math.min(offset + 300, anime.episodesAvailable); off += 100) {
         const aClass = (offset === off) ? "link current" : "link";
         paginationContainer.append(
-            "<a class=\"" + aClass + "\" href=\"?offset=" + off + "\">" + (off + 1).toString() + " - " + Math.min(off + 100, animeEpisodes).toString() + "</a>"
+            "<a class=\"" + aClass + "\" href=\"?offset=" + off + "\">" + (off + 1).toString() + " - " + Math.min(off + 100, anime.episodesAvailable).toString() + "</a>"
         );
     }
 
-    if (animeEpisodes - offset > 300) {
-        const tOff = 100 * Math.floor((animeEpisodes - 1) / 100);
+    if (anime.episodesAvailable - offset > 300) {
+        const tOff = 100 * Math.floor((anime.episodesAvailable - 1) / 100);
         const spanClass = (offset === tOff) ? "link current" : "link";
         paginationContainer.append(
-            "<span class=\"skip\">&gt;</span><a class=\"" + spanClass + "\" href=\"?offset=" + tOff + "\">" + tOff.toString() + " - " + animeEpisodes.toString() + "</a>"
+            "<span class=\"skip\">&gt;</span><a class=\"" + spanClass + "\" href=\"?offset=" + tOff + "\">" + tOff.toString() + " - " + anime.episodesAvailable.toString() + "</a>"
         );
     }
 
@@ -37,7 +41,7 @@ function fixEpisodePagination(offset) {
         .insertAfter("div.js-scrollfix-bottom-rel>div>table");
 }
 
-async function showAnimeEpisodes() {
+export default async function showAnimeEpisodes() {
     const episodeTable = document.querySelector("table.episode_list");
     const currentEpisodeOffset = parseInt(currentURL.searchParams.get("offset")) || 0;
 
@@ -49,7 +53,7 @@ async function showAnimeEpisodes() {
         if (episodeCount === 100) {
             console.log("episode table paginated...");
         } else {
-            if (lastEpisodeIndex < animeEpisodes) {
+            if (lastEpisodeIndex < anime.episodesAvailable) {
                 const episodeTableDescendHeader = document.querySelector("table.episode_list.descend tr.episode-list-header");
 
                 const episodePrefab = document.querySelector("tr.episode-list-data").cloneNode(true);
@@ -59,7 +63,7 @@ async function showAnimeEpisodes() {
                 episodePrefab.querySelector("td.episode-aired").remove();
                 episodePrefab.querySelector("td.episode-forum").remove();
 
-                for (let i = lastEpisodeIndex + 1; i < animeEpisodes; i++) {
+                for (let i = lastEpisodeIndex + 1; i < anime.episodesAvailable; i++) {
                     let epIdx = (i + 1).toString();
                     let episodeObject = $(episodePrefab).clone();
                     episodeObject.find("td.episode-number").text(epIdx);
@@ -83,9 +87,9 @@ async function showAnimeEpisodes() {
         fixEpisodePagination(currentEpisodeOffset);
     } else {
         console.log("Creating episode table...");
-        document.querySelector("div.mb4").outerHTML = await $.get(grobberUrl + "/templates/mal/episode/" + animeUID, {offset: currentEpisodeOffset});
+        document.querySelector("div.mb4").outerHTML = await $.get(grobberUrl + "/templates/mal/episode/" + anime.uid, {offset: currentEpisodeOffset});
     }
 
     const episodeCountDisplay = document.querySelector("h2>span.di-ib");
-    episodeCountDisplay.innerText = "(" + animeEpisodes.toString() + "/" + episodeCountDisplay.innerText.split("/")[1];
+    episodeCountDisplay.innerText = "(" + anime.episodesAvailable.toString() + "/" + episodeCountDisplay.innerText.split("/")[1];
 }

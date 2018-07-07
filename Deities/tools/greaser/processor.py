@@ -1,10 +1,12 @@
 from typing import Any, Dict
 
-from .lib.babel import compile_js
+from .lib import babel, terser
 
 
 def process(script: str, options: Dict[str, Any]) -> str:
     print("compiling script using babel...", end=" ", flush=True)
-    script = compile_js(script)
+    script = babel.compile_js(script)
+    print("done\nCompressing using Terser...", end=" ", flush=True)
+    script = terser.compress(script)
     print("done")
     return script

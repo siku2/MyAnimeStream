@@ -1,3 +1,10 @@
+import $ from "jquery";
+
+import {username} from "./api";
+import config from "./config";
+import {grobberUrl} from "./constants";
+import {versionBiggerThan} from "./utils";
+
 async function closeChangelog() {
     $("div.changelog-popup").remove();
     await config.set("lastVersion", GM_info.script.version);
@@ -28,19 +35,24 @@ async function showChangelog(toVersion, fromVersion) {
 }
 
 
-async function changelogCheckVersion() {
+export default async function checkForUpdate() {
     const localVersion = GM_info.script.version;
-    const remoteVersion = await config.lastVersion;
-    if (!remoteVersion) {
-        console.log("No remote version... Setting to", localVersion);
-        await config.set("lastVersion", localVersion);
-        return;
+    if (username) {
+        const remoteVersion = await config.lastVersion;
+        if (!remoteVersion) {
+            console.log("No remote version... Setting to", localVersion);
+            await config.set("lastVersion", localVersion);
+            return;
+        }
+
+        if (versionBiggerThan(localVersion, remoteVersion)) {
+            console.log("showing changelog");
+            await showChangelog(localVersion, remoteVersion);
+        } else {
+            console.debug("no new version");
+        }
+    } else {
+        console.log("not checking for update because user isn't logged in");
     }
 
-    if (versionBiggerThan(localVersion, remoteVersion)) {
-        console.log("showing changelog");
-        await showChangelog(localVersion, remoteVersion);
-    } else {
-        console.debug("no new version");
-    }
 }

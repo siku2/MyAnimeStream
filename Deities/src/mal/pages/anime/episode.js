@@ -1,3 +1,9 @@
+import Plyr from "plyr";
+
+import config from "../../../config";
+import {anime} from "../../../api";
+import {grobberUrl} from "../../../constants";
+
 let currentPlayer;
 let currentEpisodeIndex;
 
@@ -41,7 +47,7 @@ async function finishedEpisode() {
 
 async function onVideoEnd() {
     await finishedEpisode();
-    if (currentEpisodeIndex + 1 <= animeEpisodes) {
+    if (currentEpisodeIndex + 1 <= anime.episodesAvailable) {
         const url = new URL((currentEpisodeIndex + 1).toString(), window.location.href);
         url.searchParams.set("autoplay", "true");
         window.location.href = url.toString();
@@ -82,7 +88,7 @@ function setupPlyr() {
 }
 
 async function createPlayer(container) {
-    const html = await $.get(grobberUrl + "/templates/player/" + animeUID + "/" + (currentEpisodeIndex - 1).toString());
+    const html = await $.get(grobberUrl + "/templates/player/" + anime.uid + "/" + (currentEpisodeIndex - 1).toString());
     container.html(html);
     setupPlyr();
 }
@@ -90,11 +96,11 @@ async function createPlayer(container) {
 
 function prefetchNextEpisode() {
     console.log("prefetching next episode");
-    $.get(grobberUrl + "/anime/" + animeUID + "/" + currentEpisodeIndex.toString() + "/preload");
+    $.get(grobberUrl + "/anime/" + anime.uid + "/" + currentEpisodeIndex.toString() + "/preload");
 }
 
 
-async function showAnimeEpisode() {
+export default async function showAnimeEpisode() {
     currentEpisodeIndex = parseInt(window.location.pathname.match(/^\/anime\/\d+\/[\w-]+\/episode\/(\d+)\/?$/)[1]);
     const embedContainer = $("div.video-embed.clearfix");
 
@@ -103,7 +109,7 @@ async function showAnimeEpisode() {
 
         const episodeSlideCount = parseInt($("li.btn-anime:last span.episode-number")[0].innerText.split(" ")[1]);
 
-        if (episodeSlideCount < animeEpisodes) {
+        if (episodeSlideCount < anime.episodesAvailable) {
             const episodeSlide = document.querySelector("#vue-video-slide");
 
             const episodePrefab = $("li.btn-anime:last")
@@ -115,7 +121,7 @@ async function showAnimeEpisode() {
             episodePrefab.find("img.fl-l")
                 .attr("src", grobberUrl + "/images/default_poster");
 
-            for (let i = episodeSlideCount; i < animeEpisodes; i++) {
+            for (let i = episodeSlideCount; i < anime.episodesAvailable; i++) {
                 const episodeObject = episodePrefab.clone();
                 const epIdx = (i + 1).toString();
                 episodeObject.find("span.episode-number")
@@ -138,7 +144,7 @@ async function showAnimeEpisode() {
     } else {
         console.log("Creating new video embed and page content");
         document.querySelector("td>div.js-scrollfix-bottom-rel>div>div>table>tbody")
-            .innerHTML = await $.get(grobberUrl + "/templates/mal/episode/" + animeUID + "/" + (currentEpisodeIndex - 1).toString());
+            .innerHTML = await $.get(grobberUrl + "/templates/mal/episode/" + anime.uid + "/" + (currentEpisodeIndex - 1).toString());
         setupPlyr();
     }
     // Scroll the video slide to the correct position!

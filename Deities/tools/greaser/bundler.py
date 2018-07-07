@@ -1,7 +1,8 @@
 from pathlib import Path
+from typing import Any, Dict
 
-from .lib import parcel
+from .lib import rollup
 
 
-def bundle(entry_point: Path, build_dir: Path) -> str:
-    return parcel.bundle(entry_point, build_dir)
+def bundle(entry_point: Path, name: str, options: Dict[str, Any]) -> str:
+    return rollup.bundle(entry_point, name, options.get("globals"))

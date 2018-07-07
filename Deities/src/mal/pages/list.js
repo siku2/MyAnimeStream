@@ -1,3 +1,8 @@
+import {findAnimeUID, username} from "../../api";
+import {grobberUrl} from "../../constants";
+import {currentURL} from "../../core";
+import {injectBalloonCSS, randomItem, safeMongoKey, sleep} from "../../utils";
+
 class AnimeListEntry {
     constructor(el) {
         this.el = el;
@@ -25,27 +30,23 @@ class AnimeListEntry {
     }
 
     get uidValid() {
-        return (async () => await this.uid && this._latestEpisode >= 0)();
+        return (async () => await this.uid && this.episodesAvailable >= 0)();
     }
 
-    get airing() {
-        return this.el.find("span.content-status").text().trim() === "Airing";
+    get episodesPreviouslyAvailable() {
+        return this._episodesPreviouslyAvailable;
     }
 
-    get previousLatestEpisode() {
-        return isNaN(this._previousLatestEpisode) ? this.latestEpisode : this._previousLatestEpisode;
+    set episodesPreviouslyAvailable(value) {
+        this._episodesPreviouslyAvailable = value;
     }
 
-    set previousLatestEpisode(value) {
-        this._previousLatestEpisode = value;
+    get episodesAvailable() {
+        return isNaN(this._episodesAvailable) ? this.episodesPreviouslyAvailable : this._episodesAvailable;
     }
 
-    get latestEpisode() {
-        return this._latestEpisode;
-    }
-
-    set latestEpisode(value) {
-        this._latestEpisode = value;
+    set episodesAvailable(value) {
+        this._episodesAvailable = value;
     }
 
     get currentEpisode() {
@@ -53,11 +54,11 @@ class AnimeListEntry {
     }
 
     get nUnseenEpisodes() {
-        return (this.latestEpisode - this.currentEpisode) || 0;
+        return (this.episodesAvailable - this.currentEpisode) || 0;
     }
 
     get nNewEpisodes() {
-        return (this.latestEpisode - this.previousLatestEpisode) || 0;
+        return (this.episodesAvailable - this.episodesPreviouslyAvailable) || 0;
     }
 
     removePrevious() {
@@ -135,22 +136,19 @@ async function getCurrentlyWatchingAnimeList() {
     return watchingList;
 }
 
-async function displayCachedAnimeList(list) {
+async function displayCachedAnimeList(cachedList, watchingList) {
     if (!username) {
         console.log("not logged in -> not caching anime list");
     }
-    const resp = await $.getJSON(grobberUrl + "/user/" + username + "/episodes");
-    const cachedList = resp.episodes;
     if (!cachedList) {
         console.debug("No Anime List cached");
         return;
     }
-    for (const anime of list) {
+    for (const anime of watchingList) {
         const cachedAnime = cachedList[anime.safeName];
         if (cachedAnime) {
             anime._uid = cachedAnime.uid;
-            anime.latestEpisode = cachedAnime.latestEpisode;
-            anime.previousLatestEpisode = cachedAnime.previousLatestEpisode;
+            anime.episodesPreviouslyAvailable = cachedAnime.episodesAvailable;
             anime.show();
         }
     }
@@ -165,11 +163,10 @@ async function cacheAnimeList(list) {
     for (const anime of list) {
         cachedList[anime.safeName] = {
             uid: anime._uid,
-            latestEpisode: anime.latestEpisode,
-            previousLatestEpisode: anime.previousLatestEpisode
+            episodesAvailable: anime.episodesAvailable
         };
     }
-    await postJSON(grobberUrl + "/user/" + username + "/episodes", cachedList);
+    await $.postJSON(grobberUrl + "/user/" + username + "/episodes", cachedList);
 }
 
 async function highlightAnimeWithUnwatchedEpisodes() {
@@ -181,9 +178,12 @@ async function highlightAnimeWithUnwatchedEpisodes() {
         }
     });
 
-    const watchingList = await getCurrentlyWatchingAnimeList();
+    const [cachedList, watchingList] = await Promise.all([
+        $.getJSON(grobberUrl + "/user/" + username + "/episodes"),
+        getCurrentlyWatchingAnimeList()
+    ]);
 
-    const cacheDisplayPromise = displayCachedAnimeList(watchingList);
+    const showCachePromise = displayCachedAnimeList(cachedList, watchingList);
 
     const uids = {};
     for (const item of watchingList) {
@@ -191,22 +191,30 @@ async function highlightAnimeWithUnwatchedEpisodes() {
             uids[await item.uid] = item;
         }
     }
-    const resp = await postJSON(grobberUrl + "/anime/episode-count", Object.keys(uids));
+    const resp = await $.postJSON(grobberUrl + "/anime/episode-count", Object.keys(uids));
     if (!resp.success) {
         console.warn("Got turned down when asking for episode counts: ", resp);
         return;
     }
 
-    await cacheDisplayPromise;
-    Object.entries(resp.anime).forEach(([uid, epCount]) => uids[uid].latestEpisode = epCount);
+    await showCachePromise;
+    Object.entries(resp.anime).forEach(([uid, epCount]) => uids[uid].episodesAvailable = epCount);
     watchingList.forEach((anime) => anime.show());
 
-    cacheAnimeList(watchingList);
+    await cacheAnimeList(watchingList);
 }
 
 function injectRandomAnimeButton() {
     function openRandomAnimePage() {
-        const chosenAnime = $("tbody.list-item td.title a.link").random();
+        let chosenAnime;
+        while (true) {
+            const item = $(randomItem($("tbody.list-item td.title")));
+
+            if (item.find("span.content-status").text() !== "Not Yet Aired") {
+                chosenAnime = item.find("a.link");
+                break;
+            }
+        }
         console.log("randomly selected \"", chosenAnime.text(), "\"");
         window.location.href = chosenAnime.attr("href");
     }
@@ -220,7 +228,7 @@ function injectRandomAnimeButton() {
         .insertBefore(showStatsBtn);
 }
 
-function showAnimeList() {
+export default function showAnimeList() {
     const statusPage = parseInt(currentURL.searchParams.get("status"));
 
     highlightAnimeWithUnwatchedEpisodes();
