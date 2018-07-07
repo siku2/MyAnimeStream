@@ -20,7 +20,7 @@ class RapidVideo(Stream):
 
     @cached_property
     def links(self) -> List[str]:
-        sources = [Request(source["src"]) for source in self._req.bs.select("video source")]
+        sources = [Request(source["src"], timeout=5) for source in self._req.bs.select("video source")]
         return Stream.get_successful_links(sources)
 
 

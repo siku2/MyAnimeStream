@@ -1,5 +1,3 @@
-from operator import attrgetter
-
 from grobber.request import Request
 
 
@@ -12,10 +10,13 @@ class BasicStreamTest:
         self.streams = list(map(self.CLS, self.requests))
 
     def test_can_handle(self):
-        assert all(map(self.CLS.can_handle, self.requests))
+        for req in self.requests:
+            assert self.CLS.can_handle(req)
 
     def test_poster(self):
-        assert all(map(attrgetter("poster"), self.streams))
+        for stream in self.streams:
+            assert stream.poster
 
     def test_links(self):
-        assert all(map(attrgetter("links"), self.streams))
+        for stream in self.streams:
+            assert stream.links
