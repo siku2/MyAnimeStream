@@ -210,7 +210,7 @@ function injectRandomAnimeButton() {
         while (true) {
             const item = $(randomItem($("tbody.list-item td.title")));
 
-            if (item.find("span.content-status").text() !== "Not Yet Aired") {
+            if (item.find("span.content-status").text().trim() !== "Not Yet Aired") {
                 chosenAnime = item.find("a.link");
                 break;
             }
