@@ -101,7 +101,7 @@ export async function getAnimeInfo(name, status) {
     }
 }
 
-export function prefetchNextEpisode() {
+export function prefetchNextEpisode(episodeIndex) {
     console.log("prefetching next episode");
-    $.get(grobberUrl + "/anime/" + anime.uid + "/" + currentEpisodeIndex.toString() + "/preload");
+    $.get(grobberUrl + "/anime/" + anime.uid + "/" + (episodeIndex + 1).toString() + "/preload");
 }

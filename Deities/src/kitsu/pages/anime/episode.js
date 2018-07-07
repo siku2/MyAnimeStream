@@ -1,3 +1,4 @@
+import $ from "jquery";
 import Plyr from "plyr";
 
 import config from "../../../config";
@@ -66,5 +67,5 @@ export default async function showAnimeEpisode(episodeIndex) {
     $(html).insertAfter("div.unit-summary");
     setupPlyr();
 
-    prefetchNextEpisode();
+    prefetchNextEpisode(episodeIndex);
 }

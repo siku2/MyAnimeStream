@@ -1,6 +1,5 @@
 .pytest_cache/
 .idea/
-.cache/
 .build/
 node_modules/
 venv/

@@ -1,8 +1,10 @@
+import $ from "jquery";
 import Plyr from "plyr";
 
 import config from "../../../config";
-import {anime} from "../../../api";
+import {anime, prefetchNextEpisode} from "../../../api";
 import {grobberUrl} from "../../../constants";
+import {currentURL} from "../../../core";
 
 let currentPlayer;
 let currentEpisodeIndex;
@@ -72,11 +74,11 @@ async function onPageLeave() {
 }
 
 function setupPlyr() {
-    if (document.getElementById("player")) {
-        currentPlayer = new Plyr("#player");
+    const playerEl = document.getElementById("player");
+    if (playerEl) {
+        currentPlayer = new Plyr(playerEl);
 
-        const url = new URL(window.location.href);
-        if (url.searchParams.get("autoplay") === "true") {
+        if (currentURL.searchParams.get("autoplay") === "true") {
             currentPlayer.play();
         }
 
@@ -91,12 +93,6 @@ async function createPlayer(container) {
     const html = await $.get(grobberUrl + "/templates/player/" + anime.uid + "/" + (currentEpisodeIndex - 1).toString());
     container.html(html);
     setupPlyr();
-}
-
-
-function prefetchNextEpisode() {
-    console.log("prefetching next episode");
-    $.get(grobberUrl + "/anime/" + anime.uid + "/" + currentEpisodeIndex.toString() + "/preload");
 }
 
 
@@ -152,5 +148,5 @@ export default async function showAnimeEpisode() {
         .style.left = (-document.querySelector("li.btn-anime.play").offsetLeft)
         .toString() + "px";
 
-    prefetchNextEpisode();
+    prefetchNextEpisode(currentEpisodeIndex - 1);
 }
