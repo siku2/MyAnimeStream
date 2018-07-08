@@ -7,6 +7,7 @@ import checkForUpdate from "./changelog";
 import * as kitsu from "./kitsu/index"
 import * as mal from "./mal/index";
 import {ravenDSN} from "./constants";
+import {injectNoReferrerMeta} from "./utils";
 
 
 export const currentURL = new URL(window.location.href);
@@ -34,6 +35,7 @@ function init() {
 }
 
 function _init() {
+    injectNoReferrerMeta();
     $(init);
 }
 

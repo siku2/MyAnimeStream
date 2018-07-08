@@ -1,6 +1,8 @@
 version: 2.0.0;
 ---
-ADDED[2]: Basic support for [Kitsu](https://kitsu.io) is here!;
-Changed: Set timeout for RapidVideo streams to 5 seconds which should result in less embedded RapidVideo players;
-Changed: Changed behaviour of Greaser (the build tool for MyAnimeStream) so there might be a few new bugs;
-Fixed: "Random Anime Button" on "Plan to Watch" list no longer opens anime that haven't aired yet;
+added[2]: Basic support for [Kitsu](https://kitsu.io) is here!;
+changed: Set timeout for RapidVideo streams to 5 seconds which should result in less embedded RapidVideo players;
+changed: Changed behaviour of Greaser (the build tool for MyAnimeStream) so there might be a few new bugs;
+changed: Adjusted CSS for changelog so it looks better;
+fixed: "Random Anime Button" on "Plan to Watch" list no longer opens anime that haven't aired yet;
+fixed: Injecting  "no-referrer" policy to ensure that Mp4Upload works;

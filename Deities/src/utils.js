@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 export function sleep(timeout) {
     return new Promise((res) => setTimeout(res, timeout));
 }
@@ -6,6 +8,12 @@ export function injectBalloonCSS() {
     const link = "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css'>";
     $(link).appendTo("head");
 }
+
+export function injectNoReferrerMeta() {
+    const tag = "<meta name='referrer' content='no-referrer'/>";
+    $(tag).appendTo("head");
+}
+
 
 export function versionBiggerThan(a, b) {
     if (a === b) {
