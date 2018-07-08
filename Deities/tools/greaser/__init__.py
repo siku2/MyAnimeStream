@@ -94,8 +94,8 @@ def build(source_dir: str, output_dir: str, options: Dict[str, Any] = None):
                 with Indenter:
                     script.process(config.processor)
                     script.save()
-            else:
-                print("processing files disabled")
+        else:
+            print("processing files disabled")
 
     print(">>> BUNDLING")
     with Indenter:
