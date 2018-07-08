@@ -89,6 +89,7 @@ function toCSS(jss, options) {
     }
 
     function addProperty(scope, property, value) {
+        property = property.replace(/([a-z]*)([A-Z])([a-z]+)/g, (match, pre, mid, post) => `${pre}-${mid.toLowerCase()}${post}`);
 
         if (typeof(value) === "number" && !options.useRawValues) {
             value = value + "px";
@@ -110,16 +111,6 @@ function toCSS(jss, options) {
 
 
     const result = {};
-
-    if (typeof(jss) === "string") {
-        // evaluate the JSS object:
-        try {
-            eval("const jss = {" + jss + "}");
-        }
-        catch (e) {
-            return "/*\nUnable to parse JSS: " + e + "\n*/";
-        }
-    }
 
     jsonToCSS("", jss);
 
@@ -143,7 +134,7 @@ const defaults = {
     truncateFirst: false,
     container: null,
     containerName: "injectCSSContainer",
-    useRawValues: false
+    useRawValues: true
 };
 
 
