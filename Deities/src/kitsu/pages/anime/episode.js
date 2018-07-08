@@ -5,6 +5,7 @@ import config from "../../../config";
 import {anime, prefetchNextEpisode} from "../../../api";
 import {grobberUrl} from "../../../constants";
 import {currentURL} from "../../../core";
+import * as messages from "../../../messages";
 
 let currentPlayer;
 let currentEpisodeIndex;
@@ -64,6 +65,12 @@ export default async function showAnimeEpisode(episodeIndex) {
 
     console.log("Creating video embed");
     const html = await $.get(grobberUrl + "/templates/player/" + anime.uid + "/" + episodeIndex.toString());
+
+    if (html.success === false) {
+        messages.episodeNotFound(episodeIndex + 1);
+        return;
+    }
+
     $(html).insertAfter("div.unit-summary");
     setupPlyr();
 

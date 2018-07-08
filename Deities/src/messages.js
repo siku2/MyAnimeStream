@@ -7,10 +7,22 @@ export async function showModal(message) {
     alert(message);
 }
 
+function shouldShowMessage(id, expiryTime = 1) {
+    const cookieName = "msg-" + id;
+    if (!Cookies.get(cookieName)) {
+        Cookies.set(cookieName, "true", {
+            expires: expiryTime
+        });
+        return true;
+    } else {
+        return false;
+    }
+}
+
 export function animeNotFound() {
     const animeProvId = anime.name.replace(/\W+/g, "").toLowerCase();
-    const cookieName = "already-warned-" + animeProvId;
-    if (!Cookies.get(cookieName)) {
+    const id = `${animeProvId}-not-found`;
+    if (shouldShowMessage(id)) {
         let alertMsg = "Couldn't find \"" + anime.name + "\"!";
 
         if (Raven.isSetup()) {
@@ -19,12 +31,14 @@ export function animeNotFound() {
                 level: "info"
             });
         }
-        Cookies.set(cookieName, "true", {
-            expires: 1
-        });
+
         return showModal(alertMsg);
     } else {
         console.log("Already warned about missing anime");
         return Promise.resolve();
     }
+}
+
+export function episodeNotFound(episodeIndex) {
+    showModal(`Couldn't find episode ${episodeIndex + 1}!`);
 }
