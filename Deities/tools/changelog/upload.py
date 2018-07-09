@@ -122,7 +122,7 @@ def format_markdown(changelog: dict) -> str:
         category_changes.sort(key=itemgetter(1), reverse=True)
 
     for category, changes in categories.items():
-        markdown.append(f"### {category}")
+        markdown.append(f"\n### {category}")
         for change, priority in changes:
             change = f"**{change}**" if priority else change
             markdown.append(f"- {change}")
