@@ -6,6 +6,7 @@ import Raven from "raven-js";
 import checkForUpdate from "./changelog";
 import * as kitsu from "./kitsu/index"
 import * as mal from "./mal/index";
+import {username} from "./api";
 import {ravenDSN} from "./constants";
 import {injectNoReferrerMeta} from "./utils";
 
@@ -37,6 +38,20 @@ function init() {
 function _init() {
     injectNoReferrerMeta();
     $(init);
+}
+
+export function addUserContext(mobile) {
+    if (Raven.isSetup()) {
+        if (username) {
+            console.log("Set user context for", username);
+            Raven.setUserContext({
+                username,
+                mobile
+            });
+        } else {
+            console.log("Not logged in");
+        }
+    }
 }
 
 if (ravenDSN) {

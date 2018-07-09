@@ -1,5 +1,8 @@
+import KitsuSettings from "./pages/settings";
 import * as animePage from "./pages/anime/_router";
 import {sleep} from "../utils";
+import {addUserContext, currentURL} from "../core";
+import {setUsername} from "../api";
 
 async function waitForSelector(selector, timeout) {
     let result = document.querySelector(selector);
@@ -16,6 +19,7 @@ async function watchUrl(callback) {
     while (true) {
         if (location.href !== currentHref) {
             console.log("URL changed");
+            currentURL.href = location.href;
             callback();
             currentHref = location.href;
 
@@ -35,7 +39,21 @@ export async function route(path) {
         _urlWatcher = watchUrl(() => route(location.pathname));
     }
 
+    const nameEl = document.querySelector("a.dropdown-item[href^='/users/']");
+    if (nameEl) {
+        // href starts with /users/ (len = 7)
+        setUsername(nameEl.getAttribute("href").slice(7));
+    }
+    addUserContext();
+
     if (path.match(/^\/anime\/[\w-]+/)) {
         await animePage.route(path.replace(/^\/anime\/[\w-]+/, ""));
+    } else if (path.match(/^\/settings\//)) {
+        KitsuSettings.addSettingsButton();
+        if (currentURL.searchParams.has("myanimestream")) {
+            await KitsuSettings.show();
+        } else {
+            KitsuSettings.hide();
+        }
     }
 }

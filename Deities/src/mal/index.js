@@ -1,34 +1,19 @@
-import Raven from "raven-js";
-
 import startAdObserver from "./ad-remove";
 import showAnimeList from "./pages/list";
 
-import {setUsername, username} from "../api";
-import {currentURL} from "../core";
+import {setUsername} from "../api";
+import {addUserContext, currentURL} from "../core";
 import {isMobilePage} from "./platform";
 import {addSettingsButton, showSettings} from "./pages/settings";
 import * as animePage from "./pages/anime/_router";
 
 const settingPaths = ["/editprofile.php", "/notification/setting", "/ownlist/style", "/account/payment"];
 
-function addUserContext() {
-    if (Raven.isSetup()) {
-        setUsername(unsafeWindow.MAL.USER_NAME);
-        if (username) {
-            console.log("Set user context for", username);
-            Raven.setUserContext({
-                username,
-                mobile: isMobilePage()
-            });
-        } else {
-            console.log("Not logged in");
-        }
-    }
-}
-
 
 export async function route() {
-    addUserContext();
+    setUsername(unsafeWindow.MAL.USER_NAME);
+    addUserContext(isMobilePage());
+
     startAdObserver();
     const path = currentURL.pathname;
 
