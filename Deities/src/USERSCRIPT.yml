@@ -27,5 +27,4 @@ settings:
       Plyr: plyr
   processor:
     script_enabled:     true
-    file_enabled:       true
     log_format:         "{script.fileid}: {message}"

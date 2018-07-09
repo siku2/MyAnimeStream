@@ -7,10 +7,10 @@ import {currentURL} from "../../../core";
 
 
 function determineAnimeStatus() {
-    if (document.querySelector("a#myinfo_status")) {
+    if (document.getElementById("showAddtolistAnime")) {
         return "ABSENT";
     } else {
-        return document.querySelector("select#myinfo_status > [selected]").text.toUpperCase();
+        return document.querySelector("#myinfo_status option[selected]").innerHTML.toUpperCase();
     }
 }
 
