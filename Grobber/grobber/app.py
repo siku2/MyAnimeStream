@@ -51,12 +51,12 @@ log.info(f"Grobber version {__info__.__version__} running!")
 
 
 @app.errorhandler(GrobberException)
-def handle_grobber_exception(e: GrobberException) -> Response:
-    return error_response(e)
+def handle_grobber_exception(exc: GrobberException) -> Response:
+    return error_response(exc)
 
 
 @app.teardown_appcontext
-def teardown_appcontext(*_):
+def teardown_app_context(*_):
     proxy.teardown()
     sources.save_dirty()
 

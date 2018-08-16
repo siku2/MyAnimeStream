@@ -67,7 +67,7 @@ export default async function showAnimeEpisode(episodeIndex) {
     const html = await $.get(grobberUrl + "/templates/player/" + anime.uid + "/" + episodeIndex.toString());
 
     if (html.success === false) {
-        messages.episodeNotFound(episodeIndex + 1);
+        messages.episodeNotFound(episodeIndex);
         return;
     }
 
