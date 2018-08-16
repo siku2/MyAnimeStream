@@ -1,11 +1,10 @@
 import $ from "jquery";
-import Plyr from "plyr";
 
 import config from "../../../config";
 import {anime, prefetchNextEpisode} from "../../../api";
 import {grobberUrl} from "../../../constants";
-import {currentURL} from "../../../core";
 import * as messages from "../../../messages";
+import {setupPlyr} from "../../../utils";
 
 let currentPlayer;
 let currentEpisodeIndex;
@@ -43,22 +42,6 @@ async function onPageLeave() {
     }
 }
 
-function setupPlyr() {
-    const playerEl = document.getElementById("player");
-    if (playerEl) {
-        currentPlayer = new Plyr("#player");
-
-        if (currentURL.searchParams.get("autoplay") === "true") {
-            currentPlayer.play();
-        }
-
-        currentPlayer.on("ended", onVideoEnd);
-        window.addEventListener("beforeunload", onPageLeave);
-    } else {
-        console.warn("Couldn't find player, assuming this is an iframe!");
-    }
-}
-
 
 export default async function showAnimeEpisode(episodeIndex) {
     currentEpisodeIndex = episodeIndex;
@@ -72,7 +55,7 @@ export default async function showAnimeEpisode(episodeIndex) {
     }
 
     $(html).insertAfter("div.unit-summary");
-    setupPlyr();
+    setupPlyr(onVideoEnd, onPageLeave);
 
     prefetchNextEpisode(episodeIndex);
 }

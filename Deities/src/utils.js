@@ -1,4 +1,6 @@
 import $ from "jquery";
+import Plyr from "plyr";
+import {currentURL} from "./core";
 
 export function sleep(timeout) {
     return new Promise((res) => setTimeout(res, timeout));
@@ -49,4 +51,27 @@ export function safeMongoKey(key) {
 export function randomItem(list) {
     const randomIndex = Math.floor(Math.random() * list.length);
     return list[randomIndex];
+}
+
+export function setupPlyr(onVideoEnd, onPageLeave, onEmbeddedPlayer) {
+    let currentPlayer;
+
+    const playerEl = document.getElementById("player");
+    if (playerEl) {
+        currentPlayer = new Plyr(playerEl);
+
+        if (currentURL.searchParams.get("autoplay") === "true") {
+            currentPlayer.play();
+        }
+
+        currentPlayer.on("ended", onVideoEnd);
+        window.addEventListener("beforeunload", onPageLeave);
+    } else {
+        console.warn("Couldn't find player, assuming this is an iframe!");
+        if (onEmbeddedPlayer) {
+            onEmbeddedPlayer();
+        }
+    }
+
+    return currentPlayer;
 }

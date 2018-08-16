@@ -1,10 +1,9 @@
 import $ from "jquery";
-import Plyr from "plyr";
 
 import config from "../../../config";
 import {anime, prefetchNextEpisode} from "../../../api";
 import {grobberUrl} from "../../../constants";
-import {currentURL} from "../../../core";
+import {setupPlyr as _setupPlyr} from "../../../utils";
 
 let currentPlayer;
 let currentEpisodeIndex;
@@ -74,19 +73,21 @@ async function onPageLeave() {
 }
 
 function setupPlyr() {
-    const playerEl = document.getElementById("player");
-    if (playerEl) {
-        currentPlayer = new Plyr(playerEl);
-
-        if (currentURL.searchParams.get("autoplay") === "true") {
-            currentPlayer.play();
+    return _setupPlyr(onVideoEnd, onPageLeave, () => {
+        if (document.querySelector("div#embed-warning")) {
+            return;
         }
 
-        currentPlayer.on("ended", onVideoEnd);
-        window.addEventListener("beforeunload", onPageLeave);
-    } else {
-        console.warn("Couldn't find player, assuming this is an iframe!");
-    }
+        $(
+            "<div id='embed-warning' class='initialize-tutorial'>" +
+            "<i class='fa fa-exclamation' style='margin-right: 10px'></i>" +
+            "<span>" +
+            "This is an embedded stream (you might've noticed, lol). Please mind that MyAnimeStream won't be able to update your episode status " +
+            "because of this!" +
+            "</span>" +
+            "</div>"
+        ).insertBefore($("div.contents-video-embed"));
+    });
 }
 
 async function createPlayer(container) {
