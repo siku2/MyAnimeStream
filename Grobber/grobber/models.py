@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 UID = NewType("UID", str)
 
-RE_UID_CLEANER = re.compile(r"\W+")
+RE_UID_CLEANER = re.compile(r"[^a-z0-9一-龯]+")
 
 
 def get_certainty(a: str, b: str) -> float:
