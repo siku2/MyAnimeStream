@@ -1,9 +1,8 @@
 import abc
 import logging
-import re
 from contextlib import suppress
 from datetime import datetime
-from typing import Any, Dict, TypeVar
+from typing import Any, Dict, Pattern, TypeVar
 
 import bson
 
@@ -12,7 +11,7 @@ from .request import Request
 log = logging.getLogger(__name__)
 
 _DEFAULT = object()
-VALID_BSON_TYPES = (dict, list, tuple, bson.ObjectId, datetime, re._pattern_type, str, int, float, bool, bytes, type(None))
+VALID_BSON_TYPES = (dict, list, tuple, bson.ObjectId, datetime, Pattern, str, int, float, bool, bytes, type(None))
 BsonType = TypeVar("JsonType", *VALID_BSON_TYPES)
 
 

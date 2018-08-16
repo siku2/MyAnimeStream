@@ -1,3 +1,9 @@
+import $ from "jquery";
+import Raven from "raven-js";
+
+import {grobberUrl} from "./constants";
+import {username} from "./api";
+
 const default_config = {
     lastVersion: null,
     dub: false,
@@ -6,14 +12,15 @@ const default_config = {
     minWatchPercentageForSeen: .75
 };
 
+let _configReady = false;
+let _configLoader;
+
 const _config = {
     async set(prop, value) {
         _config[prop] = value;
         await saveConfig();
     }
 };
-let _configReady = false;
-let _configLoader;
 
 const _configHandler = {
     get(obj, prop) {
@@ -38,7 +45,7 @@ const _configHandler = {
 };
 
 const config = new Proxy(_config, _configHandler);
-
+export default config;
 
 async function loadConfig() {
     Object.assign(_config, default_config);
@@ -67,10 +74,10 @@ async function loadConfig() {
 }
 
 
-async function saveConfig() {
+export async function saveConfig() {
     if (username) {
         console.debug("saving config");
-        const resp = await postJSON(grobberUrl + "/user/" + username + "/config", _config);
+        const resp = await $.postJSON(grobberUrl + "/user/" + username + "/config", _config);
 
         if (resp.success) {
             console.log("saved config");

@@ -1,7 +1,5 @@
 from flask import Response
-
-from ..grobber import utils
-from ..grobber import app
+from grobber import app, utils
 
 SHOULD_FAIL = object()
 

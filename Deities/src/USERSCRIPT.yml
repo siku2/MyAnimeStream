@@ -1,24 +1,30 @@
 userscript:
-  name:           MyAnimeStream
-  author:         siku2
-  version:        1.7.0
-  description:    Get the most out of MyAnimeList by turning the page into a streaming site.
-  homepage:       https://siku2.github.io/
-  downloadURL:    https://mas.dokkeral.com/download
-  icon:           https://mas.dokkeral.com/images/logo
-  include:        /^http(?:s)?\:\/\/myanimelist\.net.*$/
-  noframes:       true
-  run-at:         document-start
+  name:                 MyAnimeStream
+  author:               siku2
+  version:              2.0.0
+  description:          Get the most out of your favourite anime site by turning it into a streaming site.
+  homepage:             https://mas.dokkeral.com/
+  downloadURL:          https://mas.dokkeral.com/download
+  icon:                 https://mas.dokkeral.com/images/logo
+  include:
+    - /^http(?:s)?\:\/\/myanimelist\.net.*$/
+    - /^http(?:s)?\:\/\/kitsu\.io.*$/
+  noframes:             true
+  run-at:               document-start
   require:
-    - https://code.jquery.com/jquery-3.3.1.min.js
-    - https://cdn.ravenjs.com/3.26.2/raven.min.js
+    - https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js
+    - https://cdn.jsdelivr.net/npm/raven-js@3.26.3/dist/raven.min.js
     - https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js
-    - https://cdn.plyr.io/3.3.10/plyr.js
+    - https://cdn.jsdelivr.net/npm/plyr@3.3.10/dist/plyr.min.js
 
 settings:
-  merger:
-    order:
-      first:      "constants"
-      last:       "core"
+  entry:                "core.js"
+  bundler:
+    globals:
+      jQuery: jquery
+      Raven: raven-js
+      Cookies: js-cookie
+      Plyr: plyr
   processor:
-    log_format:   "{script.fileid}: {message}"
+    script_enabled:     true
+    log_format:         "{script.fileid}: {message}"

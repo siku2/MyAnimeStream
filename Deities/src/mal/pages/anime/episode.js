@@ -1,3 +1,10 @@
+import $ from "jquery";
+
+import config from "../../../config";
+import {anime, prefetchNextEpisode} from "../../../api";
+import {grobberUrl} from "../../../constants";
+import {setupPlyr as _setupPlyr} from "../../../utils";
+
 let currentPlayer;
 let currentEpisodeIndex;
 
@@ -41,7 +48,7 @@ async function finishedEpisode() {
 
 async function onVideoEnd() {
     await finishedEpisode();
-    if (currentEpisodeIndex + 1 <= animeEpisodes) {
+    if (currentEpisodeIndex + 1 <= anime.episodesAvailable) {
         const url = new URL((currentEpisodeIndex + 1).toString(), window.location.href);
         url.searchParams.set("autoplay", "true");
         window.location.href = url.toString();
@@ -66,35 +73,31 @@ async function onPageLeave() {
 }
 
 function setupPlyr() {
-    if (document.getElementById("player")) {
-        currentPlayer = new Plyr("#player");
-
-        const url = new URL(window.location.href);
-        if (url.searchParams.get("autoplay") === "true") {
-            currentPlayer.play();
+    return _setupPlyr(onVideoEnd, onPageLeave, () => {
+        if (document.querySelector("div#embed-warning")) {
+            return;
         }
 
-        currentPlayer.on("ended", onVideoEnd);
-        window.addEventListener("beforeunload", onPageLeave);
-    } else {
-        console.warn("Couldn't find player, assuming this is an iframe!");
-    }
+        $(
+            "<div id='embed-warning' class='initialize-tutorial'>" +
+            "<i class='fa fa-exclamation' style='margin-right: 10px'></i>" +
+            "<span>" +
+            "This is an embedded stream (you might've noticed, lol). Please mind that MyAnimeStream won't be able to update your episode status " +
+            "because of this!" +
+            "</span>" +
+            "</div>"
+        ).insertBefore($("div.contents-video-embed"));
+    });
 }
 
 async function createPlayer(container) {
-    const html = await $.get(grobberUrl + "/templates/player/" + animeUID + "/" + (currentEpisodeIndex - 1).toString());
+    const html = await $.get(grobberUrl + "/templates/player/" + anime.uid + "/" + (currentEpisodeIndex - 1).toString());
     container.html(html);
     setupPlyr();
 }
 
 
-function prefetchNextEpisode() {
-    console.log("prefetching next episode");
-    $.get(grobberUrl + "/anime/" + animeUID + "/" + currentEpisodeIndex.toString() + "/preload");
-}
-
-
-async function showAnimeEpisode() {
+export default async function showAnimeEpisode() {
     currentEpisodeIndex = parseInt(window.location.pathname.match(/^\/anime\/\d+\/[\w-]+\/episode\/(\d+)\/?$/)[1]);
     const embedContainer = $("div.video-embed.clearfix");
 
@@ -103,7 +106,7 @@ async function showAnimeEpisode() {
 
         const episodeSlideCount = parseInt($("li.btn-anime:last span.episode-number")[0].innerText.split(" ")[1]);
 
-        if (episodeSlideCount < animeEpisodes) {
+        if (episodeSlideCount < anime.episodesAvailable) {
             const episodeSlide = document.querySelector("#vue-video-slide");
 
             const episodePrefab = $("li.btn-anime:last")
@@ -115,7 +118,7 @@ async function showAnimeEpisode() {
             episodePrefab.find("img.fl-l")
                 .attr("src", grobberUrl + "/images/default_poster");
 
-            for (let i = episodeSlideCount; i < animeEpisodes; i++) {
+            for (let i = episodeSlideCount; i < anime.episodesAvailable; i++) {
                 const episodeObject = episodePrefab.clone();
                 const epIdx = (i + 1).toString();
                 episodeObject.find("span.episode-number")
@@ -138,7 +141,7 @@ async function showAnimeEpisode() {
     } else {
         console.log("Creating new video embed and page content");
         document.querySelector("td>div.js-scrollfix-bottom-rel>div>div>table>tbody")
-            .innerHTML = await $.get(grobberUrl + "/templates/mal/episode/" + animeUID + "/" + (currentEpisodeIndex - 1).toString());
+            .innerHTML = await $.get(grobberUrl + "/templates/mal/episode/" + anime.uid + "/" + (currentEpisodeIndex - 1).toString());
         setupPlyr();
     }
     // Scroll the video slide to the correct position!
@@ -146,5 +149,5 @@ async function showAnimeEpisode() {
         .style.left = (-document.querySelector("li.btn-anime.play").offsetLeft)
         .toString() + "px";
 
-    prefetchNextEpisode();
+    prefetchNextEpisode(currentEpisodeIndex - 1);
 }

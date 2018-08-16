@@ -1,3 +1,8 @@
+const adSearch = [
+    "Notice us",
+    "ads help us pay the bills"
+];
+
 function adRemove() {
     Array.from(document.getElementsByTagName("*"))
         .filter((el) => {
@@ -19,7 +24,7 @@ function adRemove() {
         });
 }
 
-function observe() {
+export default function startAdObserver() {
     const observer = new MutationObserver(adRemove);
     observer.observe(document.body, {
         childList: true

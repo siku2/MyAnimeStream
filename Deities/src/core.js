@@ -1,35 +1,57 @@
-let currentURL;
-let username;
+import "./lib/index";
 
-function addUserContext() {
+import $ from "jquery";
+import Raven from "raven-js";
+
+import checkForUpdate from "./changelog";
+import * as kitsu from "./kitsu/index";
+import * as mal from "./mal/index";
+import {username} from "./api";
+import {ravenDSN} from "./constants";
+import {injectNoReferrerMeta} from "./utils";
+
+
+export const currentURL = new URL(window.location.href);
+
+
+function init() {
+    let router;
+
+    switch (currentURL.hostname) {
+        case "myanimelist.net":
+            console.info("routing MyAnimeList");
+            router = mal.route;
+            break;
+        case "kitsu.io":
+            console.info("routing Kitsu");
+            router = kitsu.route;
+            break;
+    }
+
+    if (router) {
+        router(currentURL.pathname);
+    }
+
+    checkForUpdate();
+}
+
+function _init() {
+    injectNoReferrerMeta();
+    $(init);
+}
+
+export function addUserContext(mobile) {
     if (Raven.isSetup()) {
-        username = unsafeWindow.MAL.USER_NAME;
         if (username) {
             console.log("Set user context for", username);
             Raven.setUserContext({
                 username,
-                mobile: isMobilePage()
+                mobile
             });
         } else {
             console.log("Not logged in");
         }
     }
-}
-
-
-function init() {
-    currentURL = new URL(window.location.href);
-    setupPlatform();
-
-    observe();
-
-    addUserContext();
-
-    route();
-}
-
-function _init() {
-    $(init);
 }
 
 if (ravenDSN) {

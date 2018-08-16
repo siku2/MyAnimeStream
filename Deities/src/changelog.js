@@ -1,5 +1,14 @@
+import $ from "jquery";
+
+import {username} from "./api";
+import config from "./config";
+import {grobberUrl} from "./constants";
+import {versionBiggerThan} from "./utils";
+
 async function closeChangelog() {
-    $("div.changelog-popup").remove();
+    $(".changelog-popup-container").remove();
+    $("body").removeClass("frozen");
+
     await config.set("lastVersion", GM_info.script.version);
     console.log("updated version");
 }
@@ -11,36 +20,52 @@ async function showChangelog(toVersion, fromVersion) {
         return;
     }
     $.injectCSS({
+        "body.frozen": {
+            overflow: "hidden"
+        },
+        ".changelog-popup-container": {
+            display: "flex",
+            "justifyContent, alignItems": "center",
+            position: "absolute",
+            "top, left": 0,
+            "width, height": "100%",
+            zIndex: 1000,
+            backgroundColor: "hsla(0, 0%, 0%, 0.5)"
+        },
         ".changelog-popup": {
-            position: "fixed",
-            "z-index": "2000",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            height: "90%",
-            "box-shadow": "0 0 100vh 10vh hsla(0, 5%, 4%, 0.7)"
+            zIndex: 2000,
+            minWidth: "30vw",
+            height: "90%"
         }
     });
+    const changelogContainer = $("<div class='changelog-popup-container'></div>")
+        .appendTo("body");
     $("<div class='changelog-popup'></div>")
         .html(html)
-        .appendTo("body");
+        .appendTo(changelogContainer);
+    $("body").addClass("frozen");
     $("button.close-changelog-btn").click(closeChangelog);
 }
 
 
-async function changelogCheckVersion() {
+export default async function checkForUpdate() {
     const localVersion = GM_info.script.version;
-    const remoteVersion = await config.lastVersion;
-    if (!remoteVersion) {
-        console.log("No remote version... Setting to", localVersion);
-        await config.set("lastVersion", localVersion);
-        return;
+    if (username) {
+        const remoteVersion = await config.lastVersion;
+        if (!remoteVersion) {
+            console.log("No remote version... Setting to", localVersion);
+            await config.set("lastVersion", localVersion);
+            return;
+        }
+
+        if (versionBiggerThan(localVersion, remoteVersion)) {
+            console.log("showing changelog");
+            await showChangelog(localVersion, remoteVersion);
+        } else {
+            console.debug("no new version");
+        }
+    } else {
+        console.log("not checking for update because user isn't logged in");
     }
 
-    if (versionBiggerThan(localVersion, remoteVersion)) {
-        console.log("showing changelog");
-        await showChangelog(localVersion, remoteVersion);
-    } else {
-        console.debug("no new version");
-    }
 }

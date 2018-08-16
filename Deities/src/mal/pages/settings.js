@@ -1,4 +1,9 @@
-function addSettingsButton() {
+import Raven from "raven-js";
+
+import config, {saveConfig} from "../../config";
+import {grobberUrl} from "../../constants";
+
+export function addSettingsButton() {
     const nav = document.querySelector("div#horiznav_nav ul");
     if (nav) {
         console.log("Attaching MyAnimeStream settings");
@@ -28,27 +33,23 @@ function formParseValue(value) {
 
 
 async function submitSettings() {
-    const dataArray = $("div#content div form")
-        .serializeArray();
+    const dataArray = $("div#content div form").serializeArray();
 
-    dataArray
-        .forEach((item) => {
-            config[item.name] = formParseValue(item.value);
-        });
+    dataArray.forEach((item) => {
+        config[item.name] = formParseValue(item.value);
+    });
 
     const success = await saveConfig();
 
     if (success) {
-        $("#update_success_display")
-            .show();
+        $("#update_success_display").show();
     } else {
-        $("#update_fail_display")
-            .show();
+        $("#update_fail_display").show();
     }
 }
 
 
-async function showSettings() {
+export async function showSettings() {
     console.log("Building settings page");
     document.querySelector("div#horiznav_nav a[href$=myanimestream]")
         .classList.add("horiznav_active");

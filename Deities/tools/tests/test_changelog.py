@@ -3,7 +3,7 @@ from pathlib import Path
 
 from ..changelog import upload
 
-test_file = Path(__file__).parent / "changelog.log"
+test_file = Path(__file__).parent / "test_changelog.log"
 
 
 def test_parser():
