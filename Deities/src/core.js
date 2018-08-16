@@ -4,7 +4,7 @@ import $ from "jquery";
 import Raven from "raven-js";
 
 import checkForUpdate from "./changelog";
-import * as kitsu from "./kitsu/index"
+import * as kitsu from "./kitsu/index";
 import * as mal from "./mal/index";
 import {username} from "./api";
 import {ravenDSN} from "./constants";
