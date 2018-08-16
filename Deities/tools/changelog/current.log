@@ -1,6 +1,7 @@
 version: 2.0.0;
 --------------
 added[2]: Basic support for [Kitsu](https://kitsu.io) is here!;
+added: Showing a warning when playing an embedded player;
 changed: Set timeout for RapidVideo streams to 5 seconds which should result in less embedded RapidVideo players;
 changed: Adjusted anime uids such that they may include numbers and various kanji characters;
 changed: Changed behaviour of Greaser (the build tool for MyAnimeStream) so there might be a few new bugs;
@@ -10,3 +11,4 @@ fixed: "Random Anime Button" on "Plan to Watch" list no longer opens anime that 
 fixed: Injecting "no-referrer" policy to ensure that Mp4Upload works;
 fixed: `MyAnimeStream`: Fixed a severe problem with how the anime status was determined that would break movies;
 fixed: Showing correct episode number in "Couldn't find episode x" modal now;
+fixed: not displaying "unseen episodes" when anime hasn't been started;

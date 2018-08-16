@@ -50,7 +50,8 @@ class AnimeListEntry {
     }
 
     get currentEpisode() {
-        return parseInt(this.el.find("td.progress span a").text());
+        const episode = this.el.find("td.progress span a").text();
+        return parseInt(episode) || 0;
     }
 
     get nUnseenEpisodes() {
