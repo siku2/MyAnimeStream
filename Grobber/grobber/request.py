@@ -1,4 +1,5 @@
-from typing import Any
+import json
+from typing import Any, Dict, Tuple
 
 import requests
 import urllib3
@@ -22,9 +23,10 @@ class Request:
     _response: requests.Response
     _success: bool
     _text: str
+    _json: Dict[str, Any]
     _bs: BeautifulSoup
 
-    def __init__(self, url: str, params: Any = None, headers: Any = None, timeout: int = None, **request_kwargs):
+    def __init__(self, url: str, params: Any = None, headers: Any = None, timeout: int = None, **request_kwargs) -> None:
         self._raw_url = url
         self._params = params
         self._headers = headers
@@ -38,7 +40,7 @@ class Request:
         return self.url == other.url
 
     def __repr__(self) -> str:
-        props = (
+        props: Tuple[str, ...] = (
             hasattr(self, "_response") and "REQ",
             hasattr(self, "_text") and "TXT",
             hasattr(self, "_bs") and "BS"
@@ -63,6 +65,10 @@ class Request:
     def from_state(cls, state: dict) -> "Request":
         inst = cls(state["url"], state.get("params"), state.get("headers"), state.get("timeout"), **state.get("options", {}))
         return inst
+
+    @classmethod
+    def create_soup(cls, html: str) -> BeautifulSoup:
+        return BeautifulSoup(html, "lxml")
 
     @property
     def headers(self):
@@ -126,8 +132,12 @@ class Request:
         self._dirty(1)
 
     @cached_property
+    def json(self) -> Dict[str, Any]:
+        return json.loads(self.text)
+
+    @cached_property
     def bs(self) -> BeautifulSoup:
-        return BeautifulSoup(self.text, "lxml")
+        return self.create_soup(self.text)
 
     def _dirty(self, flag: int):
         if flag > 2:
@@ -137,3 +147,4 @@ class Request:
             del self._text
         if flag > 0:
             del self._bs
+            del self._json

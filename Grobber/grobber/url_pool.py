@@ -10,9 +10,6 @@ log = logging.getLogger(__name__)
 
 
 class UrlPool:
-    name: str
-    urls: List[str]
-    ttl: timedelta
 
     def __init__(self, name: str, urls: List[str], ttl: int = 3600):
         self._url = None

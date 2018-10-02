@@ -1,15 +1,20 @@
 import re
 from typing import Iterator, List, Tuple
 
+from bs4 import BeautifulSoup
+
 from . import register_source
 from ..decorators import cached_property
 from ..models import Anime, Episode, SearchResult, Stream, get_certainty
 from ..request import Request
 from ..streams import get_stream
 
-BASE_URL = "https://9anime.is"
+SERVERS_TOKEN = 648
+
+BASE_URL = "http://9anime.is"
 SEARCH_URL = BASE_URL + "/search"
 ANIME_URL = BASE_URL + "/watch/{name}"
+EPISODES_URL = BASE_URL + f"/ajax/film/servers/{{anime_code}}?_={SERVERS_TOKEN}"
 EPISODE_URL = "https://projectman.ga/api/url"
 
 RE_SPACE = re.compile(r"\s+")
@@ -52,7 +57,7 @@ class NineEpisode(Episode):
 
 
 class NineAnime(Anime):
-    ATTRS = ("anime_id", "server_id")
+    ATTRS = ("anime_id", "anime_code", "server_id")
     EPISODE_CLS = NineEpisode
 
     @cached_property
@@ -60,8 +65,18 @@ class NineAnime(Anime):
         return self._req.bs.html["data-ts"]
 
     @cached_property
+    def anime_code(self) -> str:
+        return self._req.url.rsplit(".", 1)[-1]
+
+    @cached_property
+    def episodes_bs(self) -> BeautifulSoup:
+        eps_req = Request(EPISODES_URL.format(anime_code=self.anime_code)).json
+        eps_html = eps_req["html"]
+        return Request.create_soup(eps_html)
+
+    @cached_property
     def server_id(self) -> str:
-        return self._req.bs.select_one("div.servers span.tab.active")["data-name"]
+        return self.episodes_bs.select_one("div.servers span.tab.active")["data-name"]
 
     @cached_property
     def raw_title(self) -> str:
@@ -75,13 +90,6 @@ class NineAnime(Anime):
     def is_dub(self) -> bool:
         return self.raw_title.endswith("(Dub)")
 
-    @cached_property
-    def episode_count(self) -> int:
-        eps = self._req.bs.select("div.server.active ul.episodes li")
-        if not eps:
-            return 0
-        return len(eps)
-
     @classmethod
     def search(cls, query: str, dub: bool = False) -> Iterator[SearchResult]:
         for req, certainty in search_anime_page(query, dub=dub):
@@ -89,7 +97,9 @@ class NineAnime(Anime):
 
     @cached_property
     def raw_eps(self) -> List[NineEpisode]:
-        eps = self._req.bs.select("div.server ul.episodes.active li")
+        bs = self.episodes_bs
+
+        eps = bs.select("div.server.active ul.episodes.active li")
         episodes = []
         for ep in eps:
             ep_id = ep.a["data-id"]

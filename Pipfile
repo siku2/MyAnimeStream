@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"beautifulsoup4" = "*"
+colorlog = "*"
+lxml = "*"
+mistune = "*"
+pymongo = "*"
+raven = {version = "*", extras = ["flask"]}
+requests = "*"
+yarl = "*"
+Flask = "*"
+Werkzeug = "*"
+
+[dev-packages]
+loglette = "*"
+python-dateutil = "*"
+pyyaml = "*"
+
+[requires]
+python_version = "3.7"

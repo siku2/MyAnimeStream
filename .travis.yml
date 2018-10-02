@@ -4,8 +4,7 @@ python:
   - "3.6"
 
 install:
-  - pip install -r Deities/tools/requirements.txt
-  - pip install -r Grobber/requirements.txt
+- pipenv install --dev
   - pip install codecov
   - pip install pytest pytest-cov
 

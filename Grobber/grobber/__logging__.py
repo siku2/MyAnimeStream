@@ -4,7 +4,8 @@ CONFIG = {
     "version": 1,
     "formatters": {
         "default": {
-            "format": "[{asctime}] {levelname} in {module}: {message}",
+            "()": "colorlog.ColoredFormatter",
+            "format": "[{asctime}] {log_color}{levelname}{reset} in {blue}{module}{reset}: {message}",
             "style": "{"
         }
     },

@@ -82,16 +82,22 @@ def search(query: str) -> Response:
     num_results = cast_argument(request.args.get("results"), int, 1)
     if not (0 < num_results <= 10):
         raise InvalidRequest(f"Can only request up to 10 results (not {num_results})")
+
     result_iter = sources.search_anime(query, dub=proxy.requests_dub)
-    num_consider_results = max(num_results, 10)
+
     results_pool = []
     for result in result_iter:
-        if len(results_pool) >= num_consider_results:
+        if len(results_pool) >= num_results:
             break
+
         results_pool.append(result)
-    results = sorted(results_pool, key=attrgetter("certainty"), reverse=True)[:num_results]
+
+    results = sorted(results_pool, key=attrgetter("certainty"), reverse=True)[:min(num_results, 3)]
     ser_results = list(thread_pool.map(methodcaller("to_dict"), results))
-    return create_response(anime=ser_results)
+
+    ser_results.sort(key=lambda item: (round(item["certainty"], 2), item["anime"]["episodes"]), reverse=True)
+
+    return create_response(anime=ser_results[:num_results])
 
 
 @app.route("/anime/episode-count", methods=("POST",))
@@ -99,6 +105,7 @@ def get_anime_episode_count() -> Response:
     anime_uids = request.json
     if not isinstance(anime_uids, list):
         raise InvalidRequest("Body needs to contain a list of uids!")
+
     if len(anime_uids) > 30:
         raise InvalidRequest(f"Too many anime requested, max is 30! ({len(anime_uids)})")
     anime = filter(None, [sources.get_anime(uid) for uid in anime_uids])
