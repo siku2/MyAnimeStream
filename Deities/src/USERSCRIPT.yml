@@ -7,15 +7,15 @@ userscript:
   downloadURL:          https://mas.dokkeral.com/download
   icon:                 https://mas.dokkeral.com/images/logo
   include:
-    - /^http(?:s)?\:\/\/myanimelist\.net.*$/
-    - /^http(?:s)?\:\/\/kitsu\.io.*$/
+  - /^http(?:s)?\:\/\/myanimelist\.net.*$/
+  - /^http(?:s)?\:\/\/kitsu\.io.*$/
   noframes:             true
   run-at:               document-start
   require:
-    - https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js
-    - https://cdn.jsdelivr.net/npm/raven-js@3.26.3/dist/raven.min.js
-    - https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js
-    - https://cdn.jsdelivr.net/npm/plyr@3.3.10/dist/plyr.min.js
+  - https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js
+  - https://cdn.jsdelivr.net/npm/raven-js@3.27.0/dist/raven.min.js
+  - https://cdn.jsdelivr.net/npm/js-cookie@2.2.0/src/js.cookie.min.js
+  - https://cdn.jsdelivr.net/npm/plyr@3.4.4/dist/plyr.min.js
 
 settings:
   entry:                "core.js"
