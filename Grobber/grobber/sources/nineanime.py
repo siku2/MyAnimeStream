@@ -11,7 +11,7 @@ from ..streams import get_stream
 
 SERVERS_TOKEN = 648
 
-BASE_URL = "http://9anime.is"
+BASE_URL = "http://localhost/forward/9anime"
 SEARCH_URL = BASE_URL + "/search"
 ANIME_URL = BASE_URL + "/watch/{name}"
 EPISODES_URL = BASE_URL + f"/ajax/film/servers/{{anime_code}}?_={SERVERS_TOKEN}"

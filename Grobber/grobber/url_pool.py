@@ -11,12 +11,14 @@ log = logging.getLogger(__name__)
 
 class UrlPool:
 
-    def __init__(self, name: str, urls: List[str], ttl: int = 3600):
+    def __init__(self, name: str, urls: List[str], *, strip_slash: bool = True, ttl: int = 3600) -> None:
         self._url = None
         self._next_update = None
 
         self.name = name
         self.urls = urls
+
+        self.strip_slash = strip_slash
         self.ttl = timedelta(seconds=ttl)
 
     def __str__(self) -> str:
@@ -33,9 +35,9 @@ class UrlPool:
             self._next_update = datetime.now() + self.ttl
             self.upload()
 
-        return self._url
+        return self.prepare_url(self._url)
 
-    def fetch(self):
+    def fetch(self) -> None:
         doc = proxy.url_pool_collection.find_one(self.name)
         if not doc:
             log.debug(f"creating pool for {self}")
@@ -44,10 +46,16 @@ class UrlPool:
             self._url = doc["url"]
             self._next_update = doc["next_update"]
 
-    def upload(self):
+    def upload(self) -> None:
         proxy.url_pool_collection.update_one(dict(_id=self.name), {"$set": dict(url=self._url, next_update=self._next_update)}, upsert=True)
 
-    def update_url(self):
+    def prepare_url(self, url: str) -> str:
+        if self.strip_slash:
+            url = url.rstrip("/")
+
+        return url
+
+    def update_url(self) -> None:
         for i, url in enumerate(self.urls):
             req = Request(url, timeout=3)
             req.request_kwargs["allow_redirects"] = True

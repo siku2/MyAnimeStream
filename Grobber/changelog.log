@@ -1,0 +1,4 @@
+version: 2.0.5-dev;
+------------------
+added: Separate changelog for Grobber;
+changed: Using url pool for 9anime to ensure more better uptime;

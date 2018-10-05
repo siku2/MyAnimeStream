@@ -1,26 +1,49 @@
-from flask import Blueprint, Response, redirect, request
+import re
+from typing import Pattern, Union
+
+from flask import Blueprint, Flask, Response, redirect, request
 
 from .url_pool import UrlPool
 
 forward = Blueprint("Forward", __name__, url_prefix="/forward")
 
-
-@forward.route("/gogoanime/<path:url>")
-def gogoanime(url: str) -> Response:
-    url += "?" + request.query_string.decode("utf-8")
-    return redirect(gogoanime_pool.url + "/" + url)
+RE_ROUTE_CLEANER: Pattern = re.compile(r"\W+")
 
 
-@forward.route("/gogoanime/search")
-def gogoanime_search() -> Response:
-    url = "//search.html?" + request.query_string.decode("utf-8")
-    return redirect(gogoanime_pool.url + url)
+def create_forward(app: Union[Blueprint, Flask], pool: UrlPool, rule: str, path: str, *, include_query: bool = True) -> None:
+    def forwarder(**kwargs) -> Response:
+        url = f"{path}"
+        for name, arg in kwargs.items():
+            url += f"/{arg}"
+        if include_query:
+            url += "?" + request.query_string.decode("utf-8")
 
+        return redirect(pool.url + url)
 
-@forward.route("/gogoanime/episodes")
-def gogoanime_episodes() -> Response:
-    url = "//load-list-episode?" + request.query_string.decode("utf-8")
-    return redirect(gogoanime_pool.url + url)
+    forwarder.__name__ = pool.name + RE_ROUTE_CLEANER.sub("", path)
+
+    app.route(rule)(forwarder)
 
 
 gogoanime_pool = UrlPool("GogoAnime", ["https://gogoanime.io", "http://gogoanime.io", "https://www3.gogoanime.se"])
+
+gogoanime_map = {
+    "/gogoanime/<path:url>": "/",
+    "/gogoanime/search": "//search.html",
+    "/gogoanime/episodes": "//load-list-episode"
+}
+
+for route, target in gogoanime_map.items():
+    create_forward(forward, gogoanime_pool, route, target)
+
+nineanime_pool = UrlPool("9anime", ["http://9anime.to", "http://9anime.is"])
+
+nineanime_map = {
+    "/9anime/<path:url>": "/",
+    "/9anime/search": "/search",
+    "/9anime/watch/<path:url>": "/watch",
+    "/9anime/ajax/film/servers/<path:url>": "/ajax/film/servers"
+}
+
+for route, target in nineanime_map.items():
+    create_forward(forward, nineanime_pool, route, target)
