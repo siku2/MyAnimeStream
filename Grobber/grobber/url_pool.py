@@ -4,7 +4,7 @@ from typing import List
 
 from . import proxy
 from .exceptions import GrobberException
-from .request import Request
+from .request import DefaultUrlFormatter, Request
 
 log = logging.getLogger(__name__)
 
@@ -67,3 +67,10 @@ class UrlPool:
                 break
         else:
             raise GrobberException("No working url found")
+
+
+gogoanime_pool = UrlPool("GogoAnime", ["https://gogoanimes.co", "http://gogoanimes.co"])
+nineanime_pool = UrlPool("9anime", ["https://9anime.to/", "http://9anime.to"])
+
+DefaultUrlFormatter.add_field("GOGOANIME_URL", lambda: gogoanime_pool.url)
+DefaultUrlFormatter.add_field("9ANIME_URL", lambda: nineanime_pool.url)

@@ -1,19 +1,48 @@
+import inspect
 import json
-from typing import Any, Dict, Tuple
+from string import Formatter
+from typing import Any, Dict, List, Tuple, Union
 
 import requests
-import urllib3
 import yarl
 from bs4 import BeautifulSoup
 from requests.exceptions import ConnectionError, ReadTimeout
 
 from .decorators import cached_property
 
-urllib3.disable_warnings()
-
 DEFAULT_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
 }
+
+
+class UrlFormatter(Formatter):
+    _FIELDS: Dict[Any, Any]
+
+    def __init__(self) -> None:
+        self._FIELDS = {}
+
+    def add_field(self, key: Any, value: Any) -> None:
+        self._FIELDS[key] = value
+
+    def add_fields(self, fields: Dict[Any, Any] = None, **kwargs) -> None:
+        fields = fields or {}
+        fields.update(kwargs)
+
+        for args in fields.items():
+            self.add_field(*args)
+
+    def get_value(self, key: Union[str, int], args: List[Any], kwargs: Dict[Any, Any]) -> Any:
+        if key in self._FIELDS:
+            value = self._FIELDS[key]
+            if inspect.isfunction(value):
+                value = value()
+
+            return value
+
+        return super().get_value(key, args, kwargs)
+
+
+DefaultUrlFormatter = UrlFormatter()
 
 
 class Request:
@@ -32,6 +61,8 @@ class Request:
         self._headers = headers
         self._timeout = timeout
         self.request_kwargs = request_kwargs
+
+        self.url_formatter = DefaultUrlFormatter
 
     def __hash__(self) -> int:
         return hash(self.url)
@@ -79,7 +110,8 @@ class Request:
 
     @cached_property
     def url(self) -> str:
-        return requests.Request("GET", self._raw_url, params=self._params, headers=self.headers).prepare().url
+        raw_url = self.url_formatter.format(self._raw_url)
+        return requests.Request("GET", raw_url, params=self._params, headers=self.headers).prepare().url
 
     @url.setter
     def url(self, value: str):
@@ -92,7 +124,7 @@ class Request:
 
     @cached_property
     def response(self) -> requests.Response:
-        return requests.get(self.url, headers=self.headers, verify=False, timeout=self._timeout, **self.request_kwargs)
+        return requests.get(self.url, headers=self.headers, timeout=self._timeout, **self.request_kwargs)
 
     @response.setter
     def response(self, value: requests.Response):

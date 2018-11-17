@@ -13,9 +13,9 @@ from ..utils import add_http_scheme
 
 log = logging.getLogger(__name__)
 
-BASE_URL = "http://localhost/forward/gogoanime"
-SEARCH_URL = BASE_URL + "/search"
-EPISODE_LIST_URL = BASE_URL + "/episodes"
+BASE_URL = "{GOGOANIME_URL}"
+SEARCH_URL = BASE_URL + "//search.html"
+EPISODE_LIST_URL = BASE_URL + "//load-list-episode"
 ANIME_URL = BASE_URL + "/category/{name}"
 
 RE_SPACE = re.compile(r"\s+")

@@ -3,7 +3,7 @@ from typing import Pattern, Union
 
 from flask import Blueprint, Flask, Response, redirect, request
 
-from .url_pool import UrlPool
+from .url_pool import UrlPool, gogoanime_pool, nineanime_pool
 
 forward = Blueprint("Forward", __name__, url_prefix="/forward")
 
@@ -25,8 +25,6 @@ def create_forward(app: Union[Blueprint, Flask], pool: UrlPool, rule: str, path:
     app.route(rule)(forwarder)
 
 
-gogoanime_pool = UrlPool("GogoAnime", ["https://gogoanime.io", "http://gogoanime.io", "https://www3.gogoanime.se"])
-
 gogoanime_map = {
     "/gogoanime/<path:url>": "/",
     "/gogoanime/search": "//search.html",
@@ -35,8 +33,6 @@ gogoanime_map = {
 
 for route, target in gogoanime_map.items():
     create_forward(forward, gogoanime_pool, route, target)
-
-nineanime_pool = UrlPool("9anime", ["http://9anime.to", "http://9anime.is"])
 
 nineanime_map = {
     "/9anime/<path:url>": "/",
