@@ -1,7 +1,7 @@
 userscript:
   name:                 MyAnimeStream
   author:               siku2
-  version:              2.0.0
+  version:              2.1.0
   description:          Get the most out of your favourite anime site by turning it into a streaming site.
   homepage:             https://mas.dokkeral.com/
   downloadURL:          https://mas.dokkeral.com/download
@@ -12,10 +12,10 @@ userscript:
   noframes:             true
   run-at:               document-start
   require:
-  - https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js
-  - https://cdn.jsdelivr.net/npm/raven-js@3.27.0/dist/raven.min.js
-  - https://cdn.jsdelivr.net/npm/js-cookie@2.2.0/src/js.cookie.min.js
-  - https://cdn.jsdelivr.net/npm/plyr@3.4.4/dist/plyr.min.js
+  - https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js
+  - https://cdn.jsdelivr.net/npm/raven-js/dist/raven.min.js
+  - https://cdn.jsdelivr.net/npm/js-cookie/src/js.cookie.min.js
+  - https://cdn.jsdelivr.net/npm/plyr/dist/plyr.min.js
 
 settings:
   entry:                "core.js"
@@ -26,5 +26,5 @@ settings:
       Cookies: js-cookie
       Plyr: plyr
   processor:
-    script_enabled:     true
+    script_enabled:     false
     log_format:         "{script.fileid}: {message}"

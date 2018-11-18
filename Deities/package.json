@@ -8,12 +8,12 @@
     "babel-cli": "^6.26.0",
     "babel-preset-stage-2": "^6.24.1",
     "rollup": "^0.62.0",
-    "terser": "^3.7.7"
+    "terser": "^3.10.11"
   },
   "devDependencies": {
     "jquery": "^3.3.1",
     "js-cookie": "^2.2.0",
-    "plyr": "^3.3.21",
-    "raven-js": "^3.26.3"
+    "plyr": "^3.4.7",
+    "raven-js": "^3.27.0"
   }
 }

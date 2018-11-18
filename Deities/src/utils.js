@@ -58,7 +58,12 @@ export function setupPlyr(onVideoEnd, onPageLeave, onEmbeddedPlayer) {
 
     const playerEl = document.getElementById("player");
     if (playerEl) {
-        currentPlayer = new Plyr(playerEl);
+        try {
+            currentPlayer = new Plyr("#player");
+        } catch (e) {
+            console.trace("Plyr crashed for some reason...", e);
+            throw e;
+        }
 
         if (currentURL.searchParams.get("autoplay") === "true") {
             currentPlayer.play();
@@ -66,6 +71,7 @@ export function setupPlyr(onVideoEnd, onPageLeave, onEmbeddedPlayer) {
 
         currentPlayer.on("ended", onVideoEnd);
         window.addEventListener("beforeunload", onPageLeave);
+        console.debug("created Plyr player");
     } else {
         console.warn("Couldn't find player, assuming this is an iframe!");
         if (onEmbeddedPlayer) {

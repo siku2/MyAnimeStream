@@ -58,6 +58,8 @@ async function onVideoEnd() {
 }
 
 async function onPageLeave() {
+    console.debug("detected page unload");
+
     if (!currentPlayer.ended) {
         const percentage = currentPlayer.currentTime / currentPlayer.duration;
         const minPercentage = await config.minWatchPercentageForSeen;
@@ -73,6 +75,7 @@ async function onPageLeave() {
 }
 
 function setupPlyr() {
+    console.debug("setting up Plyr");
     return _setupPlyr(onVideoEnd, onPageLeave, () => {
         if (document.querySelector("div#embed-warning")) {
             return;
@@ -80,10 +83,9 @@ function setupPlyr() {
 
         $(
             "<div id='embed-warning' class='initialize-tutorial'>" +
-            "<i class='fa fa-exclamation' style='margin-right: 10px'></i>" +
+            "<i class='fa fa-exclamation' style='margin-right: 10px;'></i>" +
             "<span>" +
-            "This is an embedded stream (you might've noticed, lol). Please mind that MyAnimeStream won't be able to update your episode status " +
-            "because of this!" +
+            "This is an embedded stream. Please mind that MyAnimeStream won't be able to update your episode status because of this!" +
             "</span>" +
             "</div>"
         ).insertBefore($("div.contents-video-embed"));
@@ -93,7 +95,7 @@ function setupPlyr() {
 async function createPlayer(container) {
     const html = await $.get(grobberUrl + "/templates/player/" + anime.uid + "/" + (currentEpisodeIndex - 1).toString());
     container.html(html);
-    setupPlyr();
+    currentPlayer = setupPlyr();
 }
 
 
@@ -134,7 +136,7 @@ export default async function showAnimeEpisode() {
             console.log("Manipulating player");
             createPlayer(embedContainer);
 
-            $("div.information-right.fl-r.clearfix").remove(); // Provided by Crunchyroll removal
+            $("div.information-right.fl-r.clearfix").remove(); // "Provided by Crunchyroll" removal
         } else {
             console.info("Not changing player because of user settings");
         }
