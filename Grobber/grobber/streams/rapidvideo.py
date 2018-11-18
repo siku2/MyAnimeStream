@@ -7,7 +7,7 @@ from ..request import Request
 
 
 class RapidVideo(Stream):
-    HOST = "www.rapidvideo.com"
+    HOST = "rapidvideo.com"
 
     @cached_property
     def poster(self) -> Optional[str]:

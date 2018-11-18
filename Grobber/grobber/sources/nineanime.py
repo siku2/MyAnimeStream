@@ -4,6 +4,7 @@ from typing import Iterator, List, Tuple
 from bs4 import BeautifulSoup
 
 from . import register_source
+from .. import utils
 from ..decorators import cached_property
 from ..models import Anime, Episode, SearchResult, Stream, get_certainty
 from ..request import Request
@@ -70,8 +71,7 @@ class NineAnime(Anime):
 
     @cached_property
     def episodes_bs(self) -> BeautifulSoup:
-        eps_req = Request(EPISODES_URL)
-        eps_req.url_formatter.add_fields(anime_code=self.anime_code)
+        eps_req = Request(utils.format_available(EPISODES_URL, anime_code=self.anime_code))
         eps_html = eps_req.json["html"]
         return Request.create_soup(eps_html)
 

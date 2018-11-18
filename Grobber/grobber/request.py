@@ -18,8 +18,8 @@ DEFAULT_HEADERS = {
 class UrlFormatter(Formatter):
     _FIELDS: Dict[Any, Any]
 
-    def __init__(self) -> None:
-        self._FIELDS = {}
+    def __init__(self, fields: Dict[Any, Any] = None) -> None:
+        self._FIELDS = fields or {}
 
     def add_field(self, key: Any, value: Any) -> None:
         self._FIELDS[key] = value

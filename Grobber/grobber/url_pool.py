@@ -70,7 +70,9 @@ class UrlPool:
 
 
 gogoanime_pool = UrlPool("GogoAnime", ["https://gogoanimes.co", "http://gogoanimes.co"])
+masteranime_pool = UrlPool("MasterAnime", ["https://www.masterani.me"])
 nineanime_pool = UrlPool("9anime", ["https://9anime.to/", "http://9anime.to"])
 
 DefaultUrlFormatter.add_field("GOGOANIME_URL", lambda: gogoanime_pool.url)
+DefaultUrlFormatter.add_field("MASTERANIME_URL", lambda: masteranime_pool.url)
 DefaultUrlFormatter.add_field("9ANIME_URL", lambda: nineanime_pool.url)

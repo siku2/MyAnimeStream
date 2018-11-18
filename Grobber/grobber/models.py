@@ -54,7 +54,7 @@ class Stream(Expiring, abc.ABC):
 
     @classmethod
     def can_handle(cls, req: Request) -> bool:
-        return req.yarl.host == cls.HOST
+        return req.yarl.host.lstrip("www.") == cls.HOST
 
     @property
     @abc.abstractmethod
@@ -271,13 +271,14 @@ class Anime(Expiring, abc.ABC):
     def episodes(self) -> Dict[int, EPISODE_CLS]:
         if hasattr(self, "_episodes"):
             if len(self._episodes) != self.episode_count:
-                log.info("{self} doesn't have all episodes. updating!")
+                log.info(f"{self} doesn't have all episodes. updating!")
                 for i in range(self.episode_count):
                     if i not in self._episodes:
                         self._episodes[i] = self.get_episode(i)
         else:
             eps = self.get_episodes()
             self._episodes = dict(enumerate(eps))
+
         return self._episodes
 
     def get(self, index: int) -> EPISODE_CLS:

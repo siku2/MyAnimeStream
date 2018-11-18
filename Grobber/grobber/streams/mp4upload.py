@@ -51,7 +51,7 @@ class Mp4Upload(Stream):
     ATTRS = ("player_data",)
     EXPIRE_TIME = Expiring.HOUR
 
-    HOST = "www.mp4upload.com"
+    HOST = "mp4upload.com"
 
     @cached_property
     def player_data(self) -> PlayerData:

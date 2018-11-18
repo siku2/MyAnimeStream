@@ -8,7 +8,7 @@ from ..proxy import anime_collection
 
 log = logging.getLogger(__name__)
 
-_SOURCES = ["gogoanime", "nineanime"]
+_SOURCES = ["gogoanime", "masteranime"]
 SOURCES: Dict[str, Type[Anime]] = {}
 
 

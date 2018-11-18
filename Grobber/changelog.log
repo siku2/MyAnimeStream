@@ -1,8 +1,11 @@
 version: 2.1.0;
 release: unknown;
 ------------------
-changed: More flexible url behaviour for stream urls;
+added[1]: masterani.me source;
 added: Allowing redirects for streams (fixes google servers);
+changed: More flexible url behaviour for stream urls;
+removed[1]: 9Anime is gone for now;
+fixed: some stream issues and other stuff;
 
 ==================
 

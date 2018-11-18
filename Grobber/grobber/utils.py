@@ -1,5 +1,5 @@
 __all__ = ["create_response", "error_response", "cast_argument", "add_http_scheme", "parse_js_json", "thread_pool", "wait_for_first",
-           "ChangelogEntry", "Version", "external_url_for"]
+           "ChangelogEntry", "Version", "external_url_for", "format_available"]
 
 import concurrent.futures
 import json
@@ -7,7 +7,8 @@ import logging
 import re
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Callable, Iterator, List, Optional, TypeVar
+from string import Formatter
+from typing import Any, Callable, Dict, Iterator, List, Optional, TypeVar, Union
 
 from flask import Response, current_app, jsonify, url_for
 
@@ -116,3 +117,18 @@ def external_url_for(endpoint, **kwargs):
     kwargs["_scheme"] = None
     url = url_for(endpoint, **kwargs)
     return current_app.config["HOST_URL"] + url
+
+
+class _ModestFormatter(Formatter):
+    def get_value(self, key: Union[str, int], args: List[Any], kwargs: Dict[Any, Any]) -> Any:
+        try:
+            return super().get_value(key, args, kwargs)
+        except (IndexError, KeyError):
+            return f"{{{key}}}"
+
+
+ModestFormatter = _ModestFormatter()
+
+
+def format_available(text: str, *args, **kwargs) -> str:
+    return ModestFormatter.format(text, *args, **kwargs)
