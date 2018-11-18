@@ -17,14 +17,14 @@ RE_EXTRACT_CODE: Pattern = re.compile(
 RE_EXTRACT_DATA: Pattern = re.compile(r"\"file\":\s*\"(.+?)\",\s*\"image\":\s*\"(.+?)\",", re.DOTALL)
 
 
-def baseN(num, b, numerals="0123456789abcdefghijklmnopqrstuvwxyz"):
-    return ((num == 0) and numerals[0]) or (baseN(num // b, b, numerals).lstrip(numerals[0]) + numerals[num % b])
+def base_n(num, b, numerals="0123456789abcdefghijklmnopqrstuvwxyz"):
+    return ((num == 0) and numerals[0]) or (base_n(num // b, b, numerals).lstrip(numerals[0]) + numerals[num % b])
 
 
 def decode(code: str, radix: int, encoding_map: List[str]) -> str:
     for i in range(len(encoding_map) - 1, -1, -1):
         if encoding_map[i]:
-            code = re.sub(r"\b" + baseN(i, radix) + r"\b", encoding_map[i], code)
+            code = re.sub(r"\b" + base_n(i, radix) + r"\b", encoding_map[i], code)
     return code
 
 
@@ -43,6 +43,8 @@ def extract_player_data(text: str) -> Optional[PlayerData]:
             log.debug("Mp4Upload Couldn't extract file and image from decrypted code")
     else:
         log.debug("Mp4Upload Couldn't extract encrypted code from page")
+
+    return None
 
 
 class Mp4Upload(Stream):

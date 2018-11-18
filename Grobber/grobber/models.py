@@ -78,8 +78,12 @@ class Stream(Expiring, abc.ABC):
     def get_successful_links(sources: Union[Request, MutableSequence[Request]]) -> List[str]:
         if isinstance(sources, Request):
             sources = [sources]
-        else:
-            all(thread_pool.map(attrgetter("head_success"), sources))
+
+        for source in sources:
+            source.request_kwargs["allow_redirects"] = True
+
+        all(thread_pool.map(attrgetter("head_success"), sources))
+
         urls = []
         for source in sources:
             if source.head_success:
@@ -90,6 +94,9 @@ class Stream(Expiring, abc.ABC):
                 if content_type.startswith(VIDEO_MIME_TYPES):
                     log.debug(f"Accepting {source}")
                     urls.append(source.url)
+            else:
+                log.debug(f"{source} didn't make it!")
+
         return urls
 
 

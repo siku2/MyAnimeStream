@@ -10,6 +10,7 @@ from raven.handlers.logging import SentryHandler
 from werkzeug.routing import BaseConverter
 
 from . import __info__, proxy, sources
+from .debug import debug_blueprint
 from .exceptions import GrobberException, InvalidRequest, UIDUnknown
 from .forward import forward
 from .models import UID
@@ -40,6 +41,7 @@ app.url_map.converters["UID"] = UIDConverter
 app.register_blueprint(templates)
 app.register_blueprint(users)
 app.register_blueprint(forward)
+app.register_blueprint(debug_blueprint)
 
 try:
     app.config["HOST_URL"] = add_http_scheme(os.environ["HOST_URL"])

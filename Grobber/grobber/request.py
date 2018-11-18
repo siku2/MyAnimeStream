@@ -143,7 +143,7 @@ class Request:
         if hasattr(self, "_response"):
             return self.response
         timeout = self._timeout or 3
-        return requests.head(self.url, headers=self.headers, verify=False, timeout=timeout, **self.request_kwargs)
+        return requests.head(self.url, headers=self.headers, timeout=timeout, **self.request_kwargs)
 
     @cached_property
     def head_success(self) -> bool:

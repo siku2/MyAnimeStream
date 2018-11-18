@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 _DEFAULT = object()
 VALID_BSON_TYPES = (dict, list, tuple, bson.ObjectId, datetime, Pattern, str, int, float, bool, bytes, type(None))
-BsonType = TypeVar("JsonType", *VALID_BSON_TYPES)
+BsonType = TypeVar("BsonType", *VALID_BSON_TYPES)
 
 
 def check_container_bson(data: Any) -> bool:

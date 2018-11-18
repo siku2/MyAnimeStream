@@ -1,3 +1,11 @@
+version: 2.1.0;
+release: unknown;
+------------------
+changed: More flexible url behaviour for stream urls;
+added: Allowing redirects for streams (fixes google servers);
+
+==================
+
 version: 2.0.6;
 release: 2018-10-05;
 ------------------
