@@ -10,6 +10,8 @@ from itertools import groupby
 from operator import attrgetter
 from typing import Any, Dict, Iterator, List, MutableSequence, NewType, Optional, Union
 
+from werkzeug.routing import BaseConverter
+
 from .decorators import cached_property
 from .exceptions import EpisodeNotFound
 from .request import Request
@@ -19,6 +21,14 @@ from .utils import thread_pool, wait_for_first
 log = logging.getLogger(__name__)
 
 UID = NewType("UID", str)
+
+
+class UIDConverter(BaseConverter):
+    def to_python(self, value):
+        return UID(value)
+
+    def to_url(self, value):
+        return super().to_url(value)
 
 RE_UID_CLEANER = re.compile(r"[^a-z0-9一-龯]+")
 
@@ -73,6 +83,8 @@ class Stream(Expiring, abc.ABC):
     def working_self(self) -> Optional["Stream"]:
         if self.working:
             return self
+        else:
+            return None
 
     @staticmethod
     def get_successful_links(sources: Union[Request, MutableSequence[Request]]) -> List[str]:
@@ -98,6 +110,13 @@ class Stream(Expiring, abc.ABC):
                 log.debug(f"{source} didn't make it!")
 
         return urls
+
+    def to_dict(self) -> Dict[str, BsonType]:
+        return {"type": type(self).__name__,
+                "url": self._req.url,
+                "links": self.links,
+                "poster": self.poster,
+                "updated": self.last_update.isoformat()}
 
 
 class Episode(Expiring, abc.ABC):
@@ -143,6 +162,7 @@ class Episode(Expiring, abc.ABC):
             if working_stream:
                 log.debug(f"Found working stream: {working_stream}")
                 return working_stream
+
         log.debug(f"No working stream for {self}")
 
     @cached_property
@@ -179,6 +199,12 @@ class Episode(Expiring, abc.ABC):
             return streams
         elif key == "stream":
             return cls.get_stream(value)
+
+    def to_dict(self) -> Dict[str, BsonType]:
+        return {"embed": self.host_url,
+                "stream": self.stream.to_dict() if self.stream else None,
+                "poster": self.poster,
+                "updated": self.last_update.isoformat()}
 
 
 class Anime(Expiring, abc.ABC):
@@ -304,7 +330,7 @@ class Anime(Expiring, abc.ABC):
                 "title": self.title,
                 "episodes": self.episode_count,
                 "dub": self.is_dub,
-                "updated": self._last_update.isoformat()}
+                "updated": self.last_update.isoformat()}
 
     @classmethod
     @abc.abstractmethod

@@ -3,7 +3,7 @@ from typing import Pattern, Union
 
 from flask import Blueprint, Flask, Response, redirect, request
 
-from .url_pool import UrlPool, gogoanime_pool, nineanime_pool
+from ..url_pool import UrlPool, gogoanime_pool, nineanime_pool
 
 forward = Blueprint("Forward", __name__, url_prefix="/forward")
 

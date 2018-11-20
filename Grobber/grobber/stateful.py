@@ -1,17 +1,20 @@
 import abc
 import logging
+from collections import deque
 from contextlib import suppress
 from datetime import datetime
-from typing import Any, Dict, Pattern, TypeVar
+from typing import Any, Dict, Iterable, List, Mapping, Pattern, TypeVar
 
 import bson
 
+from . import utils
 from .request import Request
 
 log = logging.getLogger(__name__)
 
 _DEFAULT = object()
 VALID_BSON_TYPES = (dict, list, tuple, bson.ObjectId, datetime, Pattern, str, int, float, bool, bytes, type(None))
+# noinspection PyTypeHints
 BsonType = TypeVar("BsonType", *VALID_BSON_TYPES)
 
 
@@ -54,6 +57,10 @@ class Stateful(abc.ABC):
     def dirty(self, value: bool):
         self._dirty = value
 
+    @property
+    def qualcls(self) -> str:
+        return f"{type(self).__module__}.{type(self).__qualname__}"
+
     def serialise_special(self, key: str, value: Any) -> BsonType:
         raise TypeError(f"Special key \"{key}\" with value {value} doesn't have a handler to serialise!")
 
@@ -61,11 +68,41 @@ class Stateful(abc.ABC):
     def deserialise_special(cls, key: str, value: BsonType) -> Any:
         raise TypeError(f"Special key \"{key}\" doesn't have a handler to deserialise!")
 
+    def preload_attrs(self, *attrs: str, parallel: bool = True, recursive: bool = False) -> List[Any]:
+        if not attrs:
+            attrs = self.ATTRS
+
+        def preload(attr: str) -> Any:
+            value = getattr(self, attr)
+
+            if recursive:
+                stack = deque()
+                stack.append(value)
+
+                while stack:
+                    v = stack.pop()
+                    print(v)
+
+                    if isinstance(v, Stateful):
+                        v.preload_attrs(parallel=parallel, recursive=recursive)
+                    elif isinstance(v, Mapping):
+                        stack.extend(v.keys())
+                        stack.extend(v.values())
+                    elif isinstance(v, Iterable) and not isinstance(v, str):
+                        stack.extend(v)
+
+            return value
+
+        if parallel:
+            return list(utils.thread_pool.map(preload, attrs))
+        else:
+            return [preload(attr) for attr in attrs]
+
     @property
     def state(self) -> Dict[str, BsonType]:
         data = {"req": self._req.state}
         if self.INCLUDE_CLS:
-            data["cls"] = f"{type(self).__module__}.{type(self).__qualname__}"
+            data["cls"] = self.qualcls
         for attr in self.ATTRS:
             val = getattr(self, "_" + attr, _DEFAULT)
             if val is not _DEFAULT:
@@ -110,6 +147,10 @@ class Expiring(Stateful):
                     with suppress(AttributeError):
                         delattr(self, f"_{attr}")
         return super().__getattribute__(name)
+
+    @property
+    def last_update(self) -> datetime:
+        return self._last_update
 
     @property
     def _update(self) -> bool:

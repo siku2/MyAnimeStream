@@ -25,6 +25,10 @@ class MasterEpisode(Episode):
     def mirror_data(self) -> List[Dict[str, Any]]:
         bs = self._req.bs
         element = bs.select_one("video-mirrors")
+
+        if not element:
+            return []
+
         return json.loads(element[":mirrors"])
 
     @cached_property
@@ -52,7 +56,10 @@ class MasterEpisode(Episode):
 
     @cached_property
     def host_url(self) -> str:
-        return self.mirror_links[0]
+        if self.mirror_links:
+            return self.mirror_links[0]
+        else:
+            return self._req.url
 
 
 class MasterAnime(Anime):

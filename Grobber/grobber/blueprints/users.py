@@ -1,8 +1,8 @@
 from flask import Blueprint, Response, request
 
-from . import proxy
-from .exceptions import InvalidRequest, UserNotFound
-from .utils import *
+from .. import proxy
+from ..exceptions import InvalidRequest, UserNotFound
+from ..utils import *
 
 users = Blueprint("Users", __name__, url_prefix="/user")
 
@@ -23,7 +23,7 @@ def store_data(username: str, name: str, data: dict) -> Response:
 
 
 def get_data_resp(username: str, name: str) -> Response:
-    user_data = proxy.user_collection.find_one(username)
+    user_data = proxy.user_collection.find_one(username, projection={name: 1})
     if user_data:
         items = user_data.get(name, {})
         return create_response(**{name: items})
@@ -44,14 +44,19 @@ def set_user_config(username: str) -> Response:
     return store_data(username, "config", update)
 
 
-@users.route("/<username>/episodes")
-def get_user_episodes(username: str) -> Response:
-    return get_data_resp(username, "episodes")
+@users.route("/<username>/anime")
+def get_anime(username: str) -> Response:
+    return get_data_resp(username, "anime")
 
 
-@users.route("/<username>/episodes", methods=("POST",))
+@users.route("/<username>/anime/<name>")
+def get_anime(username: str, name: str) -> Response:
+    return get_data_resp(username, "anime")
+
+
+@users.route("/<username>/anime", methods=("POST",))
 def set_user_episodes(username: str) -> Response:
     update = request.get_json()
     if not update:
         return error_response(InvalidRequest("Episodes missing"))
-    return store_data(username, "episodes", update)
+    return store_data(username, "anime", update)

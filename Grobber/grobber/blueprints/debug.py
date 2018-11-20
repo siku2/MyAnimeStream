@@ -1,9 +1,9 @@
 from flask import Blueprint, Response, request
 
-from . import streams
-from .exceptions import *
-from .request import Request
-from .utils import create_response
+from .. import streams
+from ..exceptions import *
+from ..request import Request
+from ..utils import create_response
 
 debug_blueprint = Blueprint("debug", __name__, url_prefix="/debug")
 
@@ -18,7 +18,5 @@ def extract_stream() -> Response:
     if not stream:
         raise StreamNotFound()
 
-    getattr(stream, "links")
-    getattr(stream, "poster")
-
+    stream.preload_attrs(recursive=True)
     return create_response(stream.state)

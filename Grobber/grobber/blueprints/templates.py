@@ -5,10 +5,10 @@ from typing import Dict
 import mistune
 from flask import Blueprint, Response, render_template, request
 
-from . import proxy, sources
-from .exceptions import GrobberException, InvalidRequest, UIDUnknown
-from .models import UID
-from .utils import *
+from .. import proxy, sources
+from ..exceptions import GrobberException, InvalidRequest, UIDUnknown
+from ..models import UID
+from ..utils import *
 
 templates = Blueprint("templates", __name__, url_prefix="/templates")
 

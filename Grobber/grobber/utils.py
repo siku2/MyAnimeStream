@@ -6,7 +6,7 @@ import json
 import logging
 import re
 from collections import namedtuple
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Executor, ThreadPoolExecutor
 from string import Formatter
 from typing import Any, Callable, Dict, Iterator, List, Optional, TypeVar, Union
 
@@ -70,7 +70,7 @@ def parse_js_json(text: str):
 
 
 THREAD_WORKERS = 10
-thread_pool = ThreadPoolExecutor(max_workers=THREAD_WORKERS)
+thread_pool: Executor = ThreadPoolExecutor(max_workers=THREAD_WORKERS)
 
 
 def wait_for_first(items: List[Callable[..., T]], cond: Callable[[T], bool] = bool) -> Optional[T]:
