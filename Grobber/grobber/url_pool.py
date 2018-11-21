@@ -57,8 +57,7 @@ class UrlPool:
 
     def update_url(self) -> None:
         for i, url in enumerate(self.urls):
-            req = Request(url, timeout=3)
-            req.request_kwargs["allow_redirects"] = True
+            req = Request(url, allow_redirects=True)
             log.debug(f"trying {req}")
             if req.head_success:
                 self.urls.insert(0, self.urls.pop(i))
@@ -66,7 +65,7 @@ class UrlPool:
                 log.debug(f"{req} successful, moving to front! ({self._url})")
                 break
         else:
-            raise GrobberException("No working url found")
+            raise GrobberException(f"{self} No working url found")
 
 
 gogoanime_pool = UrlPool("GogoAnime", ["https://gogoanimes.co", "http://gogoanimes.co"])

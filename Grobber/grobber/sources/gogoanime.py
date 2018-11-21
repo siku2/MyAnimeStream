@@ -43,7 +43,11 @@ def search_anime_page(name: str, dub: bool = False) -> Iterator[Tuple[Request, f
     req = Request(SEARCH_URL, {"keyword": name})
     bs = req.bs
     container = bs.select_one("ul.items")
+    if not container:
+        return
+
     search_results = container.find_all("li")
+
     for result in search_results:
         image_link = result.find("a")
         title = image_link["title"]

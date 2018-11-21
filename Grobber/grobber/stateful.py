@@ -81,7 +81,6 @@ class Stateful(abc.ABC):
 
                 while stack:
                     v = stack.pop()
-                    print(v)
 
                     if isinstance(v, Stateful):
                         v.preload_attrs(parallel=parallel, recursive=recursive)

@@ -1,5 +1,6 @@
 import inspect
 import json
+import logging
 from string import Formatter
 from typing import Any, Dict, List, Tuple, Union
 
@@ -10,8 +11,10 @@ from requests.exceptions import ConnectionError, ReadTimeout
 
 from .decorators import cached_property
 
+log = logging.getLogger(__name__)
+
 DEFAULT_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0"
 }
 
 
@@ -62,7 +65,7 @@ class Request:
         self._timeout = timeout
         self.request_kwargs = request_kwargs
 
-        self.url_formatter = DefaultUrlFormatter
+        self._formatter = DefaultUrlFormatter
 
     def __hash__(self) -> int:
         return hash(self.url)
@@ -110,7 +113,7 @@ class Request:
 
     @cached_property
     def url(self) -> str:
-        raw_url = self.url_formatter.format(self._raw_url)
+        raw_url = self._formatter.format(self._raw_url)
         return requests.Request("GET", raw_url, params=self._params, headers=self.headers).prepare().url
 
     @url.setter
@@ -124,7 +127,7 @@ class Request:
 
     @cached_property
     def response(self) -> requests.Response:
-        return requests.get(self.url, headers=self.headers, timeout=self._timeout, **self.request_kwargs)
+        return self.perform_request("get")
 
     @response.setter
     def response(self, value: requests.Response):
@@ -142,14 +145,15 @@ class Request:
     def head_response(self) -> requests.Response:
         if hasattr(self, "_response"):
             return self.response
-        timeout = self._timeout or 3
-        return requests.head(self.url, headers=self.headers, timeout=timeout, **self.request_kwargs)
+
+        return self.perform_request("head", timeout=self._timeout or 5)
 
     @cached_property
     def head_success(self) -> bool:
         try:
             return self.head_response.ok
-        except (ConnectionError, ReadTimeout):
+        except (ConnectionError, ReadTimeout) as e:
+            log.warning(f"Couldn't head to {self.url}", exc_info=e)
             return False
 
     @cached_property
@@ -165,7 +169,10 @@ class Request:
 
     @cached_property
     def json(self) -> Dict[str, Any]:
-        return json.loads(self.text)
+        try:
+            return json.loads(self.text)
+        except json.JSONDecodeError:
+            log.exception(f"Couldn't parse json:\n\n{self.text}\n\n")
 
     @cached_property
     def bs(self) -> BeautifulSoup:
@@ -180,3 +187,10 @@ class Request:
         if flag > 0:
             del self._bs
             del self._json
+
+    def perform_request(self, method: str, **kwargs) -> requests.Response:
+        options = self.request_kwargs.copy()
+        options.update(headers=self.headers, timeout=self._timeout)
+        options.update(kwargs)
+
+        return requests.request(method, self.url, **options)

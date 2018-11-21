@@ -45,7 +45,7 @@ def set_user_config(username: str) -> Response:
 
 
 @users.route("/<username>/anime")
-def get_anime(username: str) -> Response:
+def get_all_anime(username: str) -> Response:
     return get_data_resp(username, "anime")
 
 

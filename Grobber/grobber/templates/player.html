@@ -1,10 +1,10 @@
 {% if episode.stream %}
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.3.10/plyr.css">
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.4.7/plyr.css">
 
-    <video id="player" poster="{{ url_for("get_episode_poster", uid=uid, index=index) }}" playsinline controls
+    <video id="player" poster="{{ url_for("Anime.get_episode_poster", uid=uid, index=index) }}" playsinline controls
            data-plyr-config='{"disableContextMenu": false}'>
         {% for link in episode.stream %}
-            <source src="{{ link }}">
+            <source src="{{ link }}" type="video/mp4">
         {% endfor %}
     </video>
 {% else %}
