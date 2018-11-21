@@ -10,7 +10,7 @@ from concurrent.futures import Executor, ThreadPoolExecutor
 from string import Formatter
 from typing import Any, Callable, Dict, Iterator, List, Optional, TypeVar, Union
 
-from flask import Response, current_app, jsonify, url_for
+from flask import Response, current_app, jsonify, request, url_for
 
 from .exceptions import GrobberException
 
@@ -116,7 +116,11 @@ def external_url_for(endpoint, **kwargs):
     kwargs["_external"] = False
     kwargs["_scheme"] = None
     url = url_for(endpoint, **kwargs)
-    return current_app.config["HOST_URL"] + url
+
+    if "HOST_URL" in current_app.config:
+        return current_app.config["HOST_URL"] + url
+    else:
+        return request.host_url + url.lstrip("/")
 
 
 class _ModestFormatter(Formatter):

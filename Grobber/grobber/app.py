@@ -30,8 +30,9 @@ app.register_blueprint(users)
 app.register_blueprint(forward)
 app.register_blueprint(debug_blueprint)
 
+app.config["HOST_URL"] = add_http_scheme(os.getenv("HOST_URL"))
+
 try:
-    app.config["HOST_URL"] = add_http_scheme(os.environ["HOST_URL"])
     app.config["USERSCRIPT_LOCATION"] = os.environ["USERSCRIPT_LOCATION"]
 except KeyError as e:
     raise KeyError(f"Missing env variable key: {e.args[0]}. Please set it and restart") from None
