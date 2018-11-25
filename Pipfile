@@ -12,8 +12,8 @@ pymongo = "*"
 raven = {version = "*", extras = ["flask"]}
 requests = "*"
 yarl = "*"
-Flask = "*"
-Werkzeug = "*"
+pyppeteer = "*"
+quart = "*"
 
 [dev-packages]
 loglette = "*"
