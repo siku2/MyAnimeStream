@@ -33,7 +33,7 @@ services:
 
   proxy:
     container_name: Scylla
-    image: wildcat/scylla:latest
+    image: siku2/scylla:latest
     restart: always
     ports:
       - 8899:8899
