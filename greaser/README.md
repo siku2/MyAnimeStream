@@ -1,0 +1,3 @@
+#greaser
+
+Facilitates userscript creation.

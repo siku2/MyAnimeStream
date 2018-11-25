@@ -1,8 +1,0 @@
-version: 1.6.0;
-release: 2018-07-04 23:58;
----
-ADDED: Making sure that episode keys don't have dots in them;
-CHANGED: Now only reporting "actual" Deities errors to Sentry;
-CHANGED: Only storing episode data for anime that are being watched;
-FIXED: Rapidvideo poster now has better error handling;
-FIXED: Calling the correct function in episode template now;

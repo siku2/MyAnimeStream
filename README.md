@@ -10,7 +10,9 @@ and embeds a stream for your favourite shows.
 Why am I even writing this... No one should actually use this, I don't want any legal trouble... I just want the nice "install" button so I don't have to install it manually...
 
 
-## [Install](https://mas.dokkeral.com/download)
+
+
+
 
 
 ## Supported sites
