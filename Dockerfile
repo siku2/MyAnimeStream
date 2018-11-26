@@ -25,11 +25,18 @@ FROM python:3.7
 LABEL maintainer="simon@siku2.io"
 EXPOSE 80
 
+# nginx / supervisor
 RUN apt-get update \
-    && apt-get install -y nginx supervisor
+    && apt-get dist-upgrade -yq \
+    && apt-get install -yq nginx supervisor
 
-RUN rm /etc/nginx/sites-available/default
+RUN apt-get clean \
+    && rm -rf /var/lib/apt/lists/
 
+RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf \
+    && rm /etc/nginx/sites-available/default
+
+# grobber setup
 RUN pip install gunicorn uvicorn pipenv
 
 COPY Pipfile Pipfile.lock ./
@@ -45,9 +52,5 @@ COPY grobber/.docker/nginx.conf /etc/nginx/conf.d/
 COPY grobber/.docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY --from=dolos /dist/myanimestream.user.js grobber/static/js/
-
-COPY grobber/.docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["/usr/bin/supervisord"]
