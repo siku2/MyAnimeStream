@@ -37,11 +37,11 @@ RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf \
     && rm /etc/nginx/sites-available/default
 
 # grobber setup
-RUN pip install gunicorn uvicorn pipenv
+RUN pip install gunicorn uvicorn pipenv pyppeteer \
+    && pyppeteer-install
 
 COPY Pipfile Pipfile.lock ./
-RUN pipenv install --system --deploy \
-    && pipenv run pyppeteer-install
+RUN pipenv install --system --deploy
 
 WORKDIR /app
 

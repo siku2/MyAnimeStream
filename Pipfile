@@ -8,12 +8,12 @@ name = "pypi"
 colorlog = "*"
 lxml = "*"
 mistune = "*"
-pymongo = "*"
-raven = {version = "*", extras = ["flask"]}
-requests = "*"
+raven = "*"
 yarl = "*"
 pyppeteer = "*"
 quart = "*"
+aiohttp = "*"
+motor = "*"
 
 [dev-packages]
 loglette = "*"
