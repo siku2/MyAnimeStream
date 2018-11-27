@@ -12,6 +12,7 @@ services:
       - backend
     environment:
       - MONGO_URI=mongodb://database:27017
+      - CHROME_WS=ws://browserless:3000
       - HTTP_PROXY=http://proxy:8081
       - HTTPS_PROXY=http://proxy:8081
       - SENTRY_DSN
@@ -42,6 +43,22 @@ services:
       - 8081
     volumes:
       - scylla:/var/www/scylla
+    networks:
+      - backend
+
+  browserless:
+    container_name: Browserless
+    image: browserless/chrome
+    restart: always
+    environment:
+      - MAX_CONCURRENT_SESSIONS=5
+      - MAX_QUEUE_LENGTH=10
+      - PREBOOT_CHROME=true
+      - CONNECTION_TIMEOUT=300000
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
     networks:
       - backend
 
