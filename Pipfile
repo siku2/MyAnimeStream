@@ -4,24 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+aiohttp = "*"
 "beautifulsoup4" = "*"
 colorlog = "*"
+loglette = "*"
 lxml = "*"
 mistune = "*"
-raven = "*"
-yarl = "*"
+motor = "*"
 pyppeteer = "*"
 quart = "*"
-aiohttp = "*"
-motor = "*"
-
-[dev-packages]
-loglette = "*"
-python-dateutil = "*"
-pyyaml = "*"
-codecov = "*"
-pytest = "*"
-pytest-cov = "*"
+raven = "*"
+yarl = "*"
 
 [requires]
 python_version = "3.7"

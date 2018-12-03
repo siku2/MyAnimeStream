@@ -1,5 +1,0 @@
-.gitignore
-docker-compose.yml
-
-node_modules/
-venv/

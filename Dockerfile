@@ -4,7 +4,7 @@
 FROM python:3.7 as dolos
 WORKDIR /build
 
-COPY package.json ./
+COPY dolos/package.json ./
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
     && apt-get update && apt-get install -y nodejs \
     && npm install
