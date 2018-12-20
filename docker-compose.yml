@@ -18,6 +18,8 @@ services:
       - SENTRY_DSN
     depends_on:
       - database
+      - proxy
+      - browserless
 
   database:
     container_name: MongoDB
