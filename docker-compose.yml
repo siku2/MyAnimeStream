@@ -13,8 +13,7 @@ services:
     environment:
       - MONGO_URI=mongodb://database:27017
       - CHROME_WS=ws://browserless:3000
-      - HTTP_PROXY=http://proxy:8081
-      - HTTPS_PROXY=http://proxy:8081
+      - PROXY_URL=http://proxy:8081
       - SENTRY_DSN
     depends_on:
       - database
