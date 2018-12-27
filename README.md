@@ -1,3 +1,5 @@
+># This project has been moved to [its own organisation](https://github.com/MyAnimeStream)!
+
 # MyAnimeStream
 
 [![Build Status](https://travis-ci.org/siku2/MyAnimeStream.svg?branch=master)](https://travis-ci.org/siku2/MyAnimeStream)
